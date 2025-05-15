@@ -2,35 +2,66 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>JSON to Cookie String Converter</title>
+  <title>JSON & Netscape Cookie Converter Admin : @Dzzmanhjay</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; background: #f7f7f7; }
     textarea, input, button { width: 100%; margin-top: 10px; font-size: 16px; }
-    #output { background: #eef; padding: 10px; margin-top: 10px; white-space: pre-wrap; word-break: break-all; }
+    #output { background: #eef; padding: 10px; margin-top: 10px; white-space: pre-wrap; word-break: break-word; }
     button { padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; }
     button:hover { background: #0056b3; }
   </style>
 </head>
 <body>
-  <h2>🍪 JSON Cookie ➜ String Cookie Converter</h2>
+  <h2>🍪 Cookie Converter</h2>
+
+  <h3>1. JSON ➜ Cookie String</h3>
   <label for="jsonInput">Dán JSON cookie vào đây:</label>
-  <textarea id="jsonInput" rows="10" placeholder='[{"name":"c_user","value":"123"},{"name":"xs","value":"abc"}]'></textarea>
-  
-  <button onclick="convertCookie()">Chuyển đổi</button>
+  <textarea id="jsonInput" rows="6" placeholder='[{"name":"c_user","value":"123"},{"name":"xs","value":"abc"}]'></textarea>
+  <button onclick="convertJSON()">Chuyển từ JSON</button>
+
+  <h3>2. Netscape ➜ Cookie String</h3>
+  <label for="netscapeInput">Dán cookie định dạng Netscape (.txt) vào đây:</label>
+  <textarea id="netscapeInput" rows="6" placeholder="# Netscape HTTP Cookie File&#10;.facebook.com	TRUE	/	FALSE	2147483647	c_user	123456"></textarea>
+  <button onclick="convertNetscape()">Chuyển từ Netscape</button>
 
   <h3>Kết quả:</h3>
   <div id="output"></div>
 
   <script>
-    function convertCookie() {
+    function convertJSON() {
       let input = document.getElementById("jsonInput").value;
       try {
         let cookies = JSON.parse(input);
+        if (!Array.isArray(cookies) || !cookies.every(c => c.name && c.value)) {
+          throw new Error("Không đúng định dạng JSON cookie.");
+        }
         let pairs = cookies.map(c => `${c.name}=${c.value}`);
-        let result = pairs.join("; ");
-        document.getElementById("output").innerText = result;
+        document.getElementById("output").innerText = pairs.join("; ");
       } catch (e) {
         document.getElementById("output").innerText = "❌ Lỗi JSON không hợp lệ!";
+      }
+    }
+
+    function convertNetscape() {
+      let input = document.getElementById("netscapeInput").value;
+      let lines = input.split('\n');
+      let cookies = [];
+
+      for (let line of lines) {
+        line = line.trim();
+        if (line === '' || line.startsWith('#')) continue; // Bỏ dòng trống hoặc dòng comment
+        let parts = line.split('\t');
+        if (parts.length >= 7) {
+          let name = parts[5];
+          let value = parts[6];
+          cookies.push(`${name}=${value}`);
+        }
+      }
+
+      if (cookies.length > 0) {
+        document.getElementById("output").innerText = cookies.join("; ");
+      } else {
+        document.getElementById("output").innerText = "❌ Không tìm thấy cookie hợp lệ trong định dạng Netscape!";
       }
     }
   </script>

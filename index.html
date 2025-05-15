@@ -2,160 +2,460 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cookie Conversion Utility</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    :root {
+      --primary: #333333;
+      --primary-dark: #1a1a1a;
+      --secondary: #666666;
+      --text-dark: #111111;
+      --text-light: #777777;
+      --bg-light: #f8f9fa;
+      --bg-white: #ffffff;
+      --shadow: 0 10px 30px rgba(0,0,0,0.08);
+      --border-radius: 14px;
+    }
+    
     * {
       box-sizing: border-box;
-    }
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #f5f5f7;
-      color: #1c1c1e;
-      min-height: 100vh;
       margin: 0;
-      padding: 30px 20px;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f5f5f5 0%, #e5e5e5 100%);
+      color: var(--text-dark);
+      min-height: 100vh;
+      padding: 40px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
     }
-    h1 {
-      margin-bottom: 5px;
-      font-weight: 700;
-      font-size: 2.4rem;
-      color: #111;
+    
+    .app-header {
+      text-align: center;
+      margin-bottom: 40px;
     }
+    
+    h1 {
+      font-weight: 700;
+      font-size: 2.8rem;
+      color: var(--primary);
+      margin-bottom: 12px;
+      text-shadow: 0 2px 10px rgba(67, 97, 238, 0.2);
+    }
+    
+    .cookie-icon {
+      font-size: 3.5rem;
+      margin-bottom: 10px;
+      color: #333333;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
     p.subtitle {
-      margin-top: 0;
-      margin-bottom: 25px;
+      margin-bottom: 15px;
       font-weight: 400;
       font-size: 1.1rem;
       max-width: 600px;
       text-align: center;
-      color: #555;
+      color: var(--text-light);
     }
+    
     .container {
-      background: #fff;
-      border-radius: 12px;
-      padding: 30px 30px 35px;
-      max-width: 700px;
+      background: var(--bg-white);
+      border-radius: var(--border-radius);
+      padding: 40px;
+      max-width: 800px;
       width: 100%;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
     }
+    
+    .input-group {
+      margin-bottom: 25px;
+    }
+    
     label {
       font-weight: 600;
       font-size: 1.05rem;
       display: block;
-      margin-bottom: 8px;
-      color: #222;
+      margin-bottom: 12px;
+      color: var(--text-dark);
     }
-    input[type="file"] {
-      padding: 12px 10px;
+    
+    .file-input-wrapper {
+      position: relative;
       width: 100%;
-      border-radius: 8px;
-      border: 1.5px solid #ccc;
-      font-weight: 500;
-      background: #fafafa;
-      color: #111;
+      height: 100px;
+      border: 2px dashed #ccc;
+      border-radius: var(--border-radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
-      transition: border-color 0.3s ease;
+      background: #f8f8f8;
+      transition: all 0.3s ease;
+      overflow: hidden;
     }
-    input[type="file"]:hover {
-      border-color: #666;
+    
+    .file-input-wrapper:hover {
+      border-color: var(--primary);
+      background: #efefef;
     }
+    
+    .file-input-wrapper.active {
+      border-color: var(--primary);
+      background: #efefef;
+    }
+    
+    .file-input-message {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+    }
+    
+    .file-input-message i {
+      font-size: 2rem;
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+    
+    .file-input-message span {
+      font-weight: 500;
+      color: var(--text-light);
+    }
+    
+    input[type="file"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+    
+    .select-wrapper {
+      position: relative;
+    }
+    
     select {
       width: 100%;
-      padding: 12px 15px;
-      border-radius: 8px;
-      border: 1.5px solid #ccc;
-      background: #fafafa;
-      color: #111;
-      font-weight: 600;
+      padding: 15px 20px;
+      border-radius: var(--border-radius);
+      border: 2px solid #e9ecef;
+      background: var(--bg-white);
+      color: var(--text-dark);
+      font-weight: 500;
       font-size: 1rem;
-      transition: border-color 0.3s ease;
-      margin-top: 6px;
-      margin-bottom: 20px;
+      transition: all 0.3s ease;
+      appearance: none;
+      cursor: pointer;
     }
-    select:hover {
-      border-color: #666;
+    
+    .select-wrapper::after {
+      content: "\f107";
+      font-family: "Font Awesome 6 Free";
+      font-weight: 900;
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-light);
+      pointer-events: none;
     }
+    
+    select:hover, select:focus {
+      border-color: var(--primary);
+      outline: none;
+    }
+    
     .button-row {
       display: flex;
       gap: 15px;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
     }
+    
     button {
       flex: 1;
-      padding: 14px 0;
-      font-size: 1.15rem;
-      font-weight: 700;
-      border-radius: 10px;
+      padding: 16px 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: var(--border-radius);
       border: none;
-      background: #333;
-      color: #fff;
       cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-      transition: background 0.3s ease, box-shadow 0.3s ease;
-      user-select: none;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
     }
-    button:hover:not(:disabled) {
-      background: #555;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+    
+    #processBtn {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
     }
+    
+    #processBtn:hover:not(:disabled) {
+      background: var(--primary-dark);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+      transform: translateY(-2px);
+    }
+    
+    #downloadBtn {
+      background: var(--secondary);
+      color: white;
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    }
+    
+    #downloadBtn:hover:not(:disabled) {
+      background: #444444;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+      transform: translateY(-2px);
+    }
+    
     button:disabled {
-      background: #bbb;
+      background: #e9ecef;
       cursor: not-allowed;
       box-shadow: none;
-      color: #666;
+      color: #adb5bd;
     }
+    
+    .output-container {
+      position: relative;
+      margin-top: 10px;
+    }
+    
+    .output-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .output-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+    
     #output {
-      background: #f0f0f0;
-      border-radius: 12px;
+      background: #f5f5f5;
+      border-radius: var(--border-radius);
       padding: 20px;
-      max-height: 350px;
+      max-height: 300px;
       overflow-y: auto;
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 0.9rem;
-      line-height: 1.4;
-      border: 1.5px solid #ccc;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      border: 2px solid #e0e0e0;
       white-space: pre-wrap;
       word-break: break-word;
-      user-select: text;
-      color: #333;
+      color: var(--text-dark);
+      transition: all 0.3s ease;
     }
-    @media (max-width: 480px) {
+    
+    #output::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    #output::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    
+    #output::-webkit-scrollbar-thumb {
+      background: #c1c8d1;
+      border-radius: 10px;
+    }
+    
+    #output::-webkit-scrollbar-thumb:hover {
+      background: #a8b1bd;
+    }
+    
+    .guide {
+      margin-top: 40px;
+      background: var(--bg-white);
+      border-radius: var(--border-radius);
+      padding: 30px;
+      max-width: 800px;
+      width: 100%;
+      box-shadow: var(--shadow);
+    }
+    
+    .guide h2 {
+      font-size: 1.6rem;
+      color: var(--primary);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .guide table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .guide th, .guide td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #e9ecef;
+    }
+    
+    .guide th {
+      font-weight: 600;
+      color: var(--text-dark);
+      background-color: #f8f9fa;
+    }
+    
+    .guide td {
+      font-weight: 400;
+      color: var(--text-light);
+    }
+    
+    .guide td:first-child {
+      width: 70px;
+      text-align: center;
+      font-size: 1.3rem;
+      color: var(--primary);
+      font-weight: 700;
+    }
+    
+    code {
+      background: #f0f0f0;
+      padding: 3px 6px;
+      border-radius: 4px;
+      font-family: 'Consolas', 'Courier New', monospace;
+      color: var(--primary);
+    }
+    
+    @media (max-width: 768px) {
+      .container, .guide {
+        padding: 25px;
+      }
+      
+      h1 {
+        font-size: 2.2rem;
+      }
+      
+      .cookie-icon {
+        font-size: 2.8rem;
+      }
+    }
+    
+    @media (max-width: 576px) {
       .button-row {
         flex-direction: column;
       }
-      button {
-        font-size: 1rem;
-        padding: 12px 0;
+      
+      .container, .guide {
+        padding: 20px;
       }
+      
+      .file-input-wrapper {
+        height: 80px;
+      }
+      
+      .guide td, .guide th {
+        padding: 10px;
+      }
+    }
+    
+    /* Animation */
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    .pulse {
+      animation: pulse 1.5s infinite;
     }
   </style>
 </head>
 <body>
-  <h1>🍪 Cookie Conversion Utility</h1>
-  <p class="subtitle">Chọn Folder File Bot - Tất Cả </p>
+  <div class="app-header">
+    <div class="cookie-icon"><i class="fas fa-cookie-bite"></i></div>
+    <h1>Cookie Conversion Utility</h1>
+    <p class="subtitle">Cung cấp số lượng lớn Cookie BOT EU - MIX - ONLY 250 - BM - PAGE</p>
+    <p class="subtitle">Mua hàng : @Ducmanhjay</p>
+  </div>
   
   <div class="container">
-    <label for="folderInput">Select folder::</label>
-    <input type="file" id="folderInput" webkitdirectory directory multiple />
-    
-    <label for="formatSelect">Chọn định dạng convert:</label>
-    <select id="formatSelect">
-      <option value="string">Cookie String</option>
-      <option value="json">JSON</option>
-      <option value="netscape">Netscape</option>
-    </select>
-    
-    <div class="button-row">
-      <button id="processBtn" disabled>Start</button>
-      <button id="downloadBtn" style="display:none;">Download .Zip</button>
+    <div class="input-group">
+      <label for="folderInput"><i class="fas fa-folder-open"></i> Chọn thư mục:</label>
+      <div class="file-input-wrapper" id="dropzone">
+        <div class="file-input-message">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <span>Nhấp hoặc kéo thả thư mục chứa file cookie</span>
+        </div>
+        <input type="file" id="folderInput" webkitdirectory directory multiple />
+      </div>
     </div>
     
-    <pre id="output">Chưa có file nào được chọn.</pre>
+    <div class="input-group">
+      <label for="formatSelect"><i class="fas fa-file-code"></i> Chọn định dạng convert:</label>
+      <div class="select-wrapper">
+        <select id="formatSelect">
+          <option value="string">Cookie String (Dạng chuỗi)</option>
+          <option value="json">JSON (JavaScript Object Notation)</option>
+          <option value="netscape">Netscape (Định dạng NetScape)</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="button-row">
+      <button id="processBtn" disabled><i class="fas fa-cogs"></i> Xử lý file</button>
+      <button id="downloadBtn" style="display:none;"><i class="fas fa-download"></i> Tải file ZIP</button>
+    </div>
+    
+    <div class="output-container">
+      <div class="output-header">
+        <div class="output-title"><i class="fas fa-terminal"></i> Kết quả</div>
+      </div>
+      <pre id="output">Chưa có file nào được chọn.</pre>
+    </div>
+  </div>
+  
+  <div class="guide">
+    <h2><i class="fas fa-book"></i> Hướng Dẫn Sử Dụng</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Bước</th>
+          <th>Mô tả</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Nhấn vào <strong>Chọn thư mục</strong> và chọn thư mục gồm tất cả các file BOT</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Chọn định dạng cookie mong muốn (String, JSON hoặc Netscape).</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Nhấn nút <strong>Xử lý file</strong> để tiến hành convert toàn bộ file.</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Khi hoàn tất, nhấn <strong>Tải file ZIP</strong> để tải tất cả kết quả về máy.</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -165,9 +465,32 @@
     const processBtn = document.getElementById('processBtn');
     const downloadBtn = document.getElementById('downloadBtn');
     const output = document.getElementById('output');
+    const dropzone = document.getElementById('dropzone');
 
     let filesToProcess = [];
     let zip = new JSZip();
+
+    // Add dropzone effects
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dropzone.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropzone.addEventListener(eventName, () => {
+        dropzone.classList.add('active');
+      }, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropzone.addEventListener(eventName, () => {
+        dropzone.classList.remove('active');
+      }, false);
+    });
 
     function detectAndParse(text) {
       text = text.trim();
@@ -237,14 +560,17 @@
       processBtn.disabled = true;
       if (filesToProcess.length > 0) {
         processBtn.disabled = false;
-        output.textContent = ` Tìm thấy ${filesToProcess.length} file cookie\n`;
+        dropzone.classList.add('active');
+        output.textContent = `TÌM THẤY ${filesToProcess.length} FILE COOKIE\n`;
       } else {
+        dropzone.classList.remove('active');
         output.textContent = 'Không tìm thấy file Cookie nào trong thư mục bạn chọn.';
       }
     });
 
     processBtn.addEventListener('click', () => {
-      output.textContent = '⏳ Đang xử lý...';
+      output.textContent = 'Đang xử lý...';
+      processBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý';
       zip = new JSZip();
       let count = 0;
       filesToProcess.sort((a, b) => {
@@ -261,7 +587,7 @@
           try {
             cookies = detectAndParse(rawText);
           } catch (err) {
-            output.textContent += `\nFile ${file.webkitRelativePath} lỗi parse cookie: ${err.message}`;
+            output.textContent += `\n File ${file.webkitRelativePath} lỗi parse cookie: ${err.message}`;
             count++;
             if (count === filesToProcess.length) {
               finishZip();
@@ -276,7 +602,7 @@
 
           zip.file(fileName, converted);
 
-          output.textContent += `\n${order}. ${file.webkitRelativePath} → ${fileName}`;
+          output.textContent += `\n ${order}. ${file.webkitRelativePath} → ${fileName}`;
 
           count++;
           if (count === filesToProcess.length) {
@@ -287,14 +613,17 @@
       });
 
       function finishZip() {
-        output.textContent += '\n\nXử lý hoàn tất! Bạn có thể tải file ZIP.';
-        downloadBtn.style.display = 'inline-block';
+        output.textContent += '\n\n Xử lý hoàn tất! Bạn có thể tải file ZIP.';
+        downloadBtn.style.display = 'inline-flex';
+        downloadBtn.classList.add('pulse');
+        processBtn.innerHTML = '<i class="fas fa-check-circle"></i> Đã xử lý xong';
         processBtn.disabled = true;
       }
     });
 
     downloadBtn.addEventListener('click', () => {
       downloadBtn.disabled = true;
+      downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tạo ZIP';
       output.textContent += '\n⏳ Đang tạo file ZIP...';
 
       zip.generateAsync({ type: "blob" }).then(content => {
@@ -303,7 +632,9 @@
         link.download = 'Cookies_Converted_Files.zip';
         link.click();
         downloadBtn.disabled = false;
-        output.textContent += '\nĐã tải xong.';
+        downloadBtn.innerHTML = '<i class="fas fa-download"></i> Tải file ZIP';
+        downloadBtn.classList.remove('pulse');
+        output.textContent += '\n Đã tải xong.';
       });
     });
   </script>

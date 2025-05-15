@@ -1,42 +1,176 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Universal Cookie Converter</title>
+  <meta charset="UTF-8" />
+  <title>Cookie Conversion Utility</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #f7f7f7; }
-    textarea, select, button { width: 100%; margin-top: 10px; font-size: 16px; }
-    #output { background: #eef; padding: 10px; margin-top: 10px; white-space: pre-wrap; word-break: break-all; min-height: 2em; }
-    button { padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; }
-    button:hover { background: #0056b3; }
-    .controls { display: flex; gap: 10px; }
-    .controls > * { flex: 1; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f5f5f7;
+      color: #1c1c1e;
+      min-height: 100vh;
+      margin: 0;
+      padding: 30px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    h1 {
+      margin-bottom: 5px;
+      font-weight: 700;
+      font-size: 2.4rem;
+      color: #111;
+    }
+    p.subtitle {
+      margin-top: 0;
+      margin-bottom: 25px;
+      font-weight: 400;
+      font-size: 1.1rem;
+      max-width: 600px;
+      text-align: center;
+      color: #555;
+    }
+    .container {
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px 30px 35px;
+      max-width: 700px;
+      width: 100%;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+    }
+    label {
+      font-weight: 600;
+      font-size: 1.05rem;
+      display: block;
+      margin-bottom: 8px;
+      color: #222;
+    }
+    input[type="file"] {
+      padding: 12px 10px;
+      width: 100%;
+      border-radius: 8px;
+      border: 1.5px solid #ccc;
+      font-weight: 500;
+      background: #fafafa;
+      color: #111;
+      cursor: pointer;
+      transition: border-color 0.3s ease;
+    }
+    input[type="file"]:hover {
+      border-color: #666;
+    }
+    select {
+      width: 100%;
+      padding: 12px 15px;
+      border-radius: 8px;
+      border: 1.5px solid #ccc;
+      background: #fafafa;
+      color: #111;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+      margin-top: 6px;
+      margin-bottom: 20px;
+    }
+    select:hover {
+      border-color: #666;
+    }
+    .button-row {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    button {
+      flex: 1;
+      padding: 14px 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+      border-radius: 10px;
+      border: none;
+      background: #333;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      user-select: none;
+    }
+    button:hover:not(:disabled) {
+      background: #555;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+    }
+    button:disabled {
+      background: #bbb;
+      cursor: not-allowed;
+      box-shadow: none;
+      color: #666;
+    }
+    #output {
+      background: #f0f0f0;
+      border-radius: 12px;
+      padding: 20px;
+      max-height: 350px;
+      overflow-y: auto;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      border: 1.5px solid #ccc;
+      white-space: pre-wrap;
+      word-break: break-word;
+      user-select: text;
+      color: #333;
+    }
+    @media (max-width: 480px) {
+      .button-row {
+        flex-direction: column;
+      }
+      button {
+        font-size: 1rem;
+        padding: 12px 0;
+      }
+    }
   </style>
 </head>
 <body>
-  <h2>🍪 Cookie Conversion Admin: @Dzzmanhjay</h2>
+  <h1>🍪 Cookie Conversion Utility</h1>
+  <p class="subtitle">Chọn Folder File Bot - Tất Cả </p>
   
-  <label for="input">Dán cookie (JSON / Netscape / Cookie String) vào đây:</label>
-  <textarea id="input" rows="8" placeholder='Paste JSON, hoặc Netscape (.txt), hoặc "name=value; name2=value2"'></textarea>
-  
-  <div class="controls">
-    <select id="outputType">
+  <div class="container">
+    <label for="folderInput">Select folder::</label>
+    <input type="file" id="folderInput" webkitdirectory directory multiple />
+    
+    <label for="formatSelect">Chọn định dạng convert:</label>
+    <select id="formatSelect">
       <option value="string">Cookie String</option>
       <option value="json">JSON</option>
       <option value="netscape">Netscape</option>
     </select>
-    <button onclick="convert()">Conversion</button>
+    
+    <div class="button-row">
+      <button id="processBtn" disabled>Start</button>
+      <button id="downloadBtn" style="display:none;">Download .Zip</button>
+    </div>
+    
+    <pre id="output">Chưa có file nào được chọn.</pre>
   </div>
-  
-  <button onclick="copyResult()">📋 Copy Results</button>
-  
-  <h3>Result:</h3>
-  <div id="output"></div>
-  
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script>
+    const folderInput = document.getElementById('folderInput');
+    const formatSelect = document.getElementById('formatSelect');
+    const processBtn = document.getElementById('processBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const output = document.getElementById('output');
+
+    let filesToProcess = [];
+    let zip = new JSZip();
+
     function detectAndParse(text) {
       text = text.trim();
-      // 1. JSON?
       try {
         const arr = JSON.parse(text);
         if (Array.isArray(arr) && arr.every(c => c.name && c.value)) {
@@ -51,7 +185,6 @@
           }));
         }
       } catch {}
-      // 2. Netscape?
       const lines = text.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'));
       if (lines.length && lines.every(l => l.split('\t').length >= 7)) {
         return lines.map(l => {
@@ -67,7 +200,6 @@
           };
         });
       }
-      // 3. Cookie String?
       const parts = text.split(';').map(s => s.trim()).filter(s => s.includes('='));
       if (parts.length) {
         return parts.map(s => {
@@ -75,22 +207,12 @@
           return { name: n.trim(), value: rest.join('=').trim(), domain:".", path:"/", expires:2147483647, secure:false, httpOnly:false };
         });
       }
-      throw new Error("Không nhận diện được định dạng đầu vào.");
+      throw new Error("Không nhận diện được định dạng cookie trong file.");
     }
-    
-    function convert() {
-      const inp = document.getElementById("input").value;
-      const outType = document.getElementById("outputType").value;
-      let cookies;
-      try {
-        cookies = detectAndParse(inp);
-      } catch (e) {
-        return document.getElementById("output").innerText = "❌ Lỗi: " + e.message;
-      }
-      
-      let result = "";
-      if (outType === "json") {
-        result = JSON.stringify(cookies.map(c => ({
+
+    function convertCookies(cookies, format) {
+      if (format === "json") {
+        return JSON.stringify(cookies.map(c => ({
           name: c.name,
           value: c.value,
           domain: c.domain,
@@ -99,24 +221,91 @@
           secure: c.secure,
           httpOnly: c.httpOnly
         })), null, 2);
-      } else if (outType === "netscape") {
-        result = cookies.map(c => 
-          `${c.domain}\tTRUE\t${c.path}\t${c.secure?"TRUE":"FALSE"}\t${c.expires}\t${c.name}\t${c.value}`
+      } else if (format === "netscape") {
+        return cookies.map(c => 
+          `${c.domain}\tTRUE\t${c.path}\t${c.secure ? "TRUE" : "FALSE"}\t${c.expires}\t${c.name}\t${c.value}`
         ).join("\n");
       } else { // string
-        result = cookies.map(c => `${c.name}=${c.value}`).join("; ");
+        return cookies.map(c => `${c.name}=${c.value}`).join("; ");
       }
-      
-      document.getElementById("output").innerText = result;
     }
-    
-    function copyResult() {
-      const txt = document.getElementById("output").innerText;
-      if (!txt) return alert("❌ Chưa có kết quả để copy!");
-      navigator.clipboard.writeText(txt)
-        .then(() => alert("✅ Đã sao chép vào clipboard!"))
-        .catch(() => alert("❌ Không thể sao chép!"));
-    }
+
+    folderInput.addEventListener('change', () => {
+      filesToProcess = Array.from(folderInput.files).filter(f => f.name === 'Cookies_JSON.txt');
+      output.textContent = '';
+      downloadBtn.style.display = 'none';
+      processBtn.disabled = true;
+      if (filesToProcess.length > 0) {
+        processBtn.disabled = false;
+        output.textContent = ` Tìm thấy ${filesToProcess.length} file cookie\n`;
+      } else {
+        output.textContent = 'Không tìm thấy file Cookie nào trong thư mục bạn chọn.';
+      }
+    });
+
+    processBtn.addEventListener('click', () => {
+      output.textContent = '⏳ Đang xử lý...';
+      zip = new JSZip();
+      let count = 0;
+      filesToProcess.sort((a, b) => {
+        const dirA = a.webkitRelativePath.split('/')[0].toLowerCase();
+        const dirB = b.webkitRelativePath.split('/')[0].toLowerCase();
+        return dirA.localeCompare(dirB);
+      });
+
+      filesToProcess.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const rawText = e.target.result;
+          let cookies;
+          try {
+            cookies = detectAndParse(rawText);
+          } catch (err) {
+            output.textContent += `\nFile ${file.webkitRelativePath} lỗi parse cookie: ${err.message}`;
+            count++;
+            if (count === filesToProcess.length) {
+              finishZip();
+            }
+            return;
+          }
+
+          const converted = convertCookies(cookies, formatSelect.value);
+          const folderName = file.webkitRelativePath.split('/')[0];
+          const order = String(index + 1).padStart(2, '0');
+          const fileName = `${order}_${folderName}_Cookies_${formatSelect.value}.txt`;
+
+          zip.file(fileName, converted);
+
+          output.textContent += `\n${order}. ${file.webkitRelativePath} → ${fileName}`;
+
+          count++;
+          if (count === filesToProcess.length) {
+            finishZip();
+          }
+        };
+        reader.readAsText(file);
+      });
+
+      function finishZip() {
+        output.textContent += '\n\nXử lý hoàn tất! Bạn có thể tải file ZIP.';
+        downloadBtn.style.display = 'inline-block';
+        processBtn.disabled = true;
+      }
+    });
+
+    downloadBtn.addEventListener('click', () => {
+      downloadBtn.disabled = true;
+      output.textContent += '\n⏳ Đang tạo file ZIP...';
+
+      zip.generateAsync({ type: "blob" }).then(content => {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(content);
+        link.download = 'Cookies_Converted_Files.zip';
+        link.click();
+        downloadBtn.disabled = false;
+        output.textContent += '\nĐã tải xong.';
+      });
+    });
   </script>
 </body>
 </html>

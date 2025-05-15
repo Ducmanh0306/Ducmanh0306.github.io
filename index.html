@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>JSON to Cookie String Converter</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f7f7f7; }
+    textarea, input, button { width: 100%; margin-top: 10px; font-size: 16px; }
+    #output { background: #eef; padding: 10px; margin-top: 10px; white-space: pre-wrap; word-break: break-all; }
+    button { padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; }
+    button:hover { background: #0056b3; }
+  </style>
+</head>
+<body>
+  <h2>🍪 JSON Cookie ➜ String Cookie Converter</h2>
+  <label for="jsonInput">Dán JSON cookie vào đây:</label>
+  <textarea id="jsonInput" rows="10" placeholder='[{"name":"c_user","value":"123"},{"name":"xs","value":"abc"}]'></textarea>
+  
+  <button onclick="convertCookie()">Chuyển đổi</button>
+
+  <h3>Kết quả:</h3>
+  <div id="output"></div>
+
+  <script>
+    function convertCookie() {
+      let input = document.getElementById("jsonInput").value;
+      try {
+        let cookies = JSON.parse(input);
+        let pairs = cookies.map(c => `${c.name}=${c.value}`);
+        let result = pairs.join("; ");
+        document.getElementById("output").innerText = result;
+      } catch (e) {
+        document.getElementById("output").innerText = "❌ Lỗi JSON không hợp lệ!";
+      }
+    }
+  </script>
+</body>
+</html>

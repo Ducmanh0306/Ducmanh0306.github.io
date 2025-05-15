@@ -2,67 +2,120 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>JSON & Netscape Cookie Converter Admin : @Dzzmanhjay</title>
+  <title>Universal Cookie Converter</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; background: #f7f7f7; }
-    textarea, input, button { width: 100%; margin-top: 10px; font-size: 16px; }
-    #output { background: #eef; padding: 10px; margin-top: 10px; white-space: pre-wrap; word-break: break-word; }
+    textarea, select, button { width: 100%; margin-top: 10px; font-size: 16px; }
+    #output { background: #eef; padding: 10px; margin-top: 10px; white-space: pre-wrap; word-break: break-all; min-height: 2em; }
     button { padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; }
     button:hover { background: #0056b3; }
+    .controls { display: flex; gap: 10px; }
+    .controls > * { flex: 1; }
   </style>
 </head>
 <body>
-  <h2>🍪 Cookie Converter Admin : @Dzzmanhjay</h2>
-
-  <h3>1. JSON ➜ Cookie String</h3>
-  <label for="jsonInput">Dán JSON cookie vào đây:</label>
-  <textarea id="jsonInput" rows="6" placeholder='[{"name":"c_user","value":"123"},{"name":"xs","value":"abc"}]'></textarea>
-  <button onclick="convertJSON()">Chuyển từ JSON</button>
-
-  <h3>2. Netscape ➜ Cookie String</h3>
-  <label for="netscapeInput">Dán cookie định dạng Netscape (.txt) vào đây:</label>
-  <textarea id="netscapeInput" rows="6" placeholder="# Netscape HTTP Cookie File&#10;.facebook.com	TRUE	/	FALSE	2147483647	c_user	123456"></textarea>
-  <button onclick="convertNetscape()">Chuyển từ Netscape</button>
-
-  <h3>Kết quả:</h3>
+  <h2>🍪 Cookie Conversion Admin: @Dzzmanhjay</h2>
+  
+  <label for="input">Dán cookie (JSON / Netscape / Cookie String) vào đây:</label>
+  <textarea id="input" rows="8" placeholder='Paste JSON, hoặc Netscape (.txt), hoặc "name=value; name2=value2"'></textarea>
+  
+  <div class="controls">
+    <select id="outputType">
+      <option value="string">Cookie String</option>
+      <option value="json">JSON</option>
+      <option value="netscape">Netscape</option>
+    </select>
+    <button onclick="convert()">Conversion</button>
+  </div>
+  
+  <button onclick="copyResult()">📋 Copy Results</button>
+  
+  <h3>Result:</h3>
   <div id="output"></div>
-
+  
   <script>
-    function convertJSON() {
-      let input = document.getElementById("jsonInput").value;
+    function detectAndParse(text) {
+      text = text.trim();
+      // 1. JSON?
       try {
-        let cookies = JSON.parse(input);
-        if (!Array.isArray(cookies) || !cookies.every(c => c.name && c.value)) {
-          throw new Error("Không đúng định dạng JSON cookie.");
+        const arr = JSON.parse(text);
+        if (Array.isArray(arr) && arr.every(c => c.name && c.value)) {
+          return arr.map(c => ({
+            name: c.name,
+            value: c.value,
+            domain: c.domain || ".",
+            path: c.path || "/",
+            expires: c.expires || 2147483647,
+            secure: c.secure || false,
+            httpOnly: c.httpOnly || false
+          }));
         }
-        let pairs = cookies.map(c => `${c.name}=${c.value}`);
-        document.getElementById("output").innerText = pairs.join("; ");
-      } catch (e) {
-        document.getElementById("output").innerText = "❌ Lỗi JSON không hợp lệ!";
+      } catch {}
+      // 2. Netscape?
+      const lines = text.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'));
+      if (lines.length && lines.every(l => l.split('\t').length >= 7)) {
+        return lines.map(l => {
+          const p = l.split('\t');
+          return {
+            domain: p[0],
+            path: p[2],
+            secure: p[3].toUpperCase() === "TRUE",
+            expires: parseInt(p[4], 10) || 2147483647,
+            name: p[5],
+            value: p[6],
+            httpOnly: p[0].startsWith("#HttpOnly_")
+          };
+        });
       }
+      // 3. Cookie String?
+      const parts = text.split(';').map(s => s.trim()).filter(s => s.includes('='));
+      if (parts.length) {
+        return parts.map(s => {
+          const [n, ...rest] = s.split('=');
+          return { name: n.trim(), value: rest.join('=').trim(), domain:".", path:"/", expires:2147483647, secure:false, httpOnly:false };
+        });
+      }
+      throw new Error("Không nhận diện được định dạng đầu vào.");
     }
-
-    function convertNetscape() {
-      let input = document.getElementById("netscapeInput").value;
-      let lines = input.split('\n');
-      let cookies = [];
-
-      for (let line of lines) {
-        line = line.trim();
-        if (line === '' || line.startsWith('#')) continue; // Bỏ dòng trống hoặc dòng comment
-        let parts = line.split('\t');
-        if (parts.length >= 7) {
-          let name = parts[5];
-          let value = parts[6];
-          cookies.push(`${name}=${value}`);
-        }
+    
+    function convert() {
+      const inp = document.getElementById("input").value;
+      const outType = document.getElementById("outputType").value;
+      let cookies;
+      try {
+        cookies = detectAndParse(inp);
+      } catch (e) {
+        return document.getElementById("output").innerText = "❌ Lỗi: " + e.message;
       }
-
-      if (cookies.length > 0) {
-        document.getElementById("output").innerText = cookies.join("; ");
-      } else {
-        document.getElementById("output").innerText = "❌ Không tìm thấy cookie hợp lệ trong định dạng Netscape!";
+      
+      let result = "";
+      if (outType === "json") {
+        result = JSON.stringify(cookies.map(c => ({
+          name: c.name,
+          value: c.value,
+          domain: c.domain,
+          path: c.path,
+          expires: c.expires,
+          secure: c.secure,
+          httpOnly: c.httpOnly
+        })), null, 2);
+      } else if (outType === "netscape") {
+        result = cookies.map(c => 
+          `${c.domain}\tTRUE\t${c.path}\t${c.secure?"TRUE":"FALSE"}\t${c.expires}\t${c.name}\t${c.value}`
+        ).join("\n");
+      } else { // string
+        result = cookies.map(c => `${c.name}=${c.value}`).join("; ");
       }
+      
+      document.getElementById("output").innerText = result;
+    }
+    
+    function copyResult() {
+      const txt = document.getElementById("output").innerText;
+      if (!txt) return alert("❌ Chưa có kết quả để copy!");
+      navigator.clipboard.writeText(txt)
+        .then(() => alert("✅ Đã sao chép vào clipboard!"))
+        .catch(() => alert("❌ Không thể sao chép!"));
     }
   </script>
 </body>

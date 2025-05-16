@@ -179,6 +179,64 @@
       outline: none;
     }
     
+    /* Tab Navigation */
+    .tabs {
+      display: flex;
+      margin-bottom: 25px;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      border: 2px solid #e9ecef;
+    }
+    
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 15px;
+      background: #f8f9fa;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text-light);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .tab.active {
+      background: var(--bg-white);
+      color: var(--primary);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    /* Paste Area */
+    .paste-area {
+      width: 100%;
+      min-height: 150px;
+      padding: 15px;
+      border-radius: var(--border-radius);
+      border: 2px solid #e9ecef;
+      background: var(--bg-white);
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.95rem;
+      resize: vertical;
+      transition: all 0.3s ease;
+    }
+    
+    .paste-area:focus {
+      border-color: var(--primary);
+      outline: none;
+    }
+    
+    /* Button Row */
     .button-row {
       display: flex;
       gap: 15px;
@@ -393,14 +451,28 @@
   </div>
   
   <div class="container">
-    <div class="input-group">
-      <label for="folderInput"><i class="fas fa-folder-open"></i> Chọn thư mục:</label>
-      <div class="file-input-wrapper" id="dropzone">
-        <div class="file-input-message">
-          <i class="fas fa-cloud-upload-alt"></i>
-          <span>Nhấp hoặc kéo thả thư mục chứa file cookie</span>
+    <div class="tabs">
+      <div class="tab active" data-tab="upload"><i class="fas fa-folder-open"></i> Tải file</div>
+      <div class="tab" data-tab="paste"><i class="fas fa-paste"></i> Dán trực tiếp</div>
+    </div>
+    
+    <div class="tab-content active" id="upload-tab">
+      <div class="input-group">
+        <label for="folderInput"><i class="fas fa-folder-open"></i> Chọn thư mục:</label>
+        <div class="file-input-wrapper" id="dropzone">
+          <div class="file-input-message">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <span>Nhấp hoặc kéo thả thư mục chứa file cookie</span>
+          </div>
+          <input type="file" id="folderInput" webkitdirectory directory multiple />
         </div>
-        <input type="file" id="folderInput" webkitdirectory directory multiple />
+      </div>
+    </div>
+    
+    <div class="tab-content" id="paste-tab">
+      <div class="input-group">
+        <label for="pasteInput"><i class="fas fa-paste"></i> Dán cookie của bạn:</label>
+        <textarea id="pasteInput" class="paste-area" placeholder="Dán cookie của bạn ở đây (định dạng string, JSON hoặc Netscape)"></textarea>
       </div>
     </div>
     
@@ -416,15 +488,16 @@
     </div>
     
     <div class="button-row">
-      <button id="processBtn" disabled><i class="fas fa-cogs"></i> Xử lý file</button>
+      <button id="processBtn" disabled><i class="fas fa-cogs"></i> Xử lý</button>
       <button id="downloadBtn" style="display:none;"><i class="fas fa-download"></i> Tải file ZIP</button>
+      <button id="copyBtn" style="display:none;"><i class="fas fa-copy"></i> Sao chép</button>
     </div>
     
     <div class="output-container">
       <div class="output-header">
         <div class="output-title"><i class="fas fa-terminal"></i> Kết quả</div>
       </div>
-      <pre id="output">Chưa có file nào được chọn.</pre>
+      <pre id="output">Chưa có dữ liệu nào được xử lý.</pre>
     </div>
   </div>
   
@@ -440,7 +513,10 @@
       <tbody>
         <tr>
           <td>1</td>
-          <td>Nhấn vào <strong>Chọn thư mục</strong> và chọn thư mục gồm tất cả các file BOT</td>
+          <td>
+            <strong>Tùy chọn A:</strong> Chọn tab <strong>Tải file</strong>, nhấn vào <strong>Chọn thư mục</strong> và chọn thư mục gồm tất cả các file BOT<br>
+            <strong>Tùy chọn B:</strong> Chọn tab <strong>Dán trực tiếp</strong> và dán cookie của bạn vào ô văn bản
+          </td>
         </tr>
         <tr>
           <td>2</td>
@@ -448,11 +524,14 @@
         </tr>
         <tr>
           <td>3</td>
-          <td>Nhấn nút <strong>Xử lý file</strong> để tiến hành convert toàn bộ file.</td>
+          <td>Nhấn nút <strong>Xử lý</strong> để tiến hành convert.</td>
         </tr>
         <tr>
           <td>4</td>
-          <td>Khi hoàn tất, nhấn <strong>Tải file ZIP</strong> để tải tất cả kết quả về máy.</td>
+          <td>
+            <strong>Nếu tải file:</strong> Khi hoàn tất, nhấn <strong>Tải file ZIP</strong> để tải tất cả kết quả về máy.<br>
+            <strong>Nếu dán trực tiếp:</strong> Khi hoàn tất, nhấn <strong>Sao chép</strong> để sao chép kết quả.
+          </td>
         </tr>
       </tbody>
     </table>
@@ -464,11 +543,48 @@
     const formatSelect = document.getElementById('formatSelect');
     const processBtn = document.getElementById('processBtn');
     const downloadBtn = document.getElementById('downloadBtn');
+    const copyBtn = document.getElementById('copyBtn');
     const output = document.getElementById('output');
     const dropzone = document.getElementById('dropzone');
+    const pasteInput = document.getElementById('pasteInput');
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
 
     let filesToProcess = [];
     let zip = new JSZip();
+    let activeTab = 'upload';
+    let convertedText = '';
+
+    // Tab switching
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tabContents.forEach(c => c.classList.remove('active'));
+        
+        tab.classList.add('active');
+        activeTab = tab.getAttribute('data-tab');
+        document.getElementById(`${activeTab}-tab`).classList.add('active');
+        
+        // Reset UI elements based on active tab
+        resetUI();
+      });
+    });
+
+    function resetUI() {
+      processBtn.disabled = true;
+      downloadBtn.style.display = 'none';
+      copyBtn.style.display = 'none';
+      
+      if (activeTab === 'upload') {
+        output.textContent = filesToProcess.length > 0 
+          ? `TÌM THẤY ${filesToProcess.length} FILE COOKIE\n` 
+          : 'Chưa có file nào được chọn.';
+        processBtn.disabled = filesToProcess.length === 0;
+      } else {
+        output.textContent = 'Dán cookie của bạn và nhấn nút Xử lý.';
+        processBtn.disabled = !pasteInput.value.trim();
+      }
+    }
 
     // Add dropzone effects
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -530,7 +646,7 @@
           return { name: n.trim(), value: rest.join('=').trim(), domain:".", path:"/", expires:2147483647, secure:false, httpOnly:false };
         });
       }
-      throw new Error("Không nhận diện được định dạng cookie trong file.");
+      throw new Error("Không nhận diện được định dạng cookie trong dữ liệu.");
     }
 
     function convertCookies(cookies, format) {
@@ -555,8 +671,6 @@
 
     folderInput.addEventListener('change', () => {
       filesToProcess = Array.from(folderInput.files).filter(f => f.name === 'Cookies_JSON.txt');
-      output.textContent = '';
-      downloadBtn.style.display = 'none';
       processBtn.disabled = true;
       if (filesToProcess.length > 0) {
         processBtn.disabled = false;
@@ -566,9 +680,25 @@
         dropzone.classList.remove('active');
         output.textContent = 'Không tìm thấy file Cookie nào trong thư mục bạn chọn.';
       }
+      downloadBtn.style.display = 'none';
+      copyBtn.style.display = 'none';
+    });
+
+    pasteInput.addEventListener('input', () => {
+      processBtn.disabled = !pasteInput.value.trim();
+      downloadBtn.style.display = 'none';
+      copyBtn.style.display = 'none';
     });
 
     processBtn.addEventListener('click', () => {
+      if (activeTab === 'upload') {
+        processFiles();
+      } else {
+        processPastedData();
+      }
+    });
+
+    function processFiles() {
       output.textContent = 'Đang xử lý...';
       processBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý';
       zip = new JSZip();
@@ -611,15 +741,33 @@
         };
         reader.readAsText(file);
       });
+    }
 
-      function finishZip() {
-        output.textContent += '\n\n Xử lý hoàn tất! Bạn có thể tải file ZIP.';
-        downloadBtn.style.display = 'inline-flex';
-        downloadBtn.classList.add('pulse');
+    function processPastedData() {
+      output.textContent = 'Đang xử lý...';
+      processBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý';
+      
+      try {
+        const cookies = detectAndParse(pasteInput.value);
+        convertedText = convertCookies(cookies, formatSelect.value);
+        
+        output.textContent = convertedText;
         processBtn.innerHTML = '<i class="fas fa-check-circle"></i> Đã xử lý xong';
-        processBtn.disabled = true;
+        copyBtn.style.display = 'inline-flex';
+        copyBtn.classList.add('pulse');
+      } catch (err) {
+        output.textContent = `Lỗi: ${err.message}`;
+        processBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Xử lý lỗi';
       }
-    });
+    }
+
+    function finishZip() {
+      output.textContent += '\n\n Xử lý hoàn tất! Bạn có thể tải file ZIP.';
+      downloadBtn.style.display = 'inline-flex';
+      downloadBtn.classList.add('pulse');
+      processBtn.innerHTML = '<i class="fas fa-check-circle"></i> Đã xử lý xong';
+      processBtn.disabled = true;
+    }
 
     downloadBtn.addEventListener('click', () => {
       downloadBtn.disabled = true;
@@ -635,6 +783,16 @@
         downloadBtn.innerHTML = '<i class="fas fa-download"></i> Tải file ZIP';
         downloadBtn.classList.remove('pulse');
         output.textContent += '\n Đã tải xong.';
+      });
+    });
+
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(convertedText).then(() => {
+        const originalText = copyBtn.innerHTML;
+        copyBtn.innerHTML = '<i class="fas fa-check"></i> Đã sao chép';
+        setTimeout(() => {
+          copyBtn.innerHTML = originalText;
+        }, 2000);
       });
     });
   </script>

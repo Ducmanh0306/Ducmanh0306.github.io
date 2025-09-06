@@ -1,1621 +1,1026 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FB88 - Cookie Utility</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-    
-    :root {
-      --primary: #6e8efb;
-      --primary-dark: #5d7de8;
-      --secondary: #a777e3;
-      --text-dark: #333333;
-      --text-light: #666666;
-      --bg-light: #f8f9fa;
-      --bg-white: #ffffff;
-      --shadow: 0 10px 30px rgba(0,0,0,0.08);
-      --border-radius: 14px;
-      --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
-    }
-    
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Poppins', sans-serif;
-    }
-    
-    body {
-      background: var(--bg-light);
-      color: var(--text-dark);
-      min-height: 100vh;
-      line-height: 1.6;
-    }
-
-    /* Navigation */
-    .nav-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      padding: 15px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      z-index: 1000;
-    }
-
-    .nav-left {
-      display: flex;
-      gap: 20px;
-      align-items: center;
-    }
-
-    .nav-right {
-      display: flex;
-      gap: 10px;
-    }
-
-    .logo {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--primary);
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .nav-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-dark);
-      padding: 12px 24px;
-      border-radius: 12px;
-      cursor: pointer;
-      font-size: 1.1rem;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .nav-btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: var(--gradient);
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      z-index: -1;
-    }
-
-    .nav-btn:hover {
-      color: var(--primary);
-      transform: translateY(-2px);
-    }
-
-    .nav-btn:hover::before {
-      opacity: 0.1;
-    }
-
-    .nav-btn.active {
-      background: var(--gradient);
-      color: white;
-      box-shadow: 0 5px 15px rgba(110, 142, 251, 0.3);
-      transform: translateY(-2px);
-    }
-
-    .nav-btn.active::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 30px;
-      height: 3px;
-      background: white;
-      border-radius: 3px;
-      animation: navPulse 2s infinite;
-    }
-
-    @keyframes navPulse {
-      0% {
-        width: 30px;
-        opacity: 1;
-      }
-      50% {
-        width: 50px;
-        opacity: 0.8;
-      }
-      100% {
-        width: 30px;
-        opacity: 1;
-      }
-    }
-
-    .nav-btn i {
-      font-size: 1.2rem;
-      transition: transform 0.3s ease;
-    }
-
-    .nav-btn:hover i {
-      transform: scale(1.1);
-    }
-
-    .nav-btn.active i {
-      transform: scale(1.2);
-    }
-
-    .lang-btn {
-      background: transparent;
-      border: 1px solid var(--primary);
-      color: var(--primary);
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      transition: all 0.3s ease;
-    }
-
-    .lang-btn:hover, .lang-btn.active {
-      background: var(--primary);
-      color: white;
-    }
-
-    /* Main Content */
-    .main-content {
-      padding-top: 80px;
-      min-height: 100vh;
-    }
-
-    .page-container {
-      display: none;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    .page-container.active {
-      display: block;
-    }
-
-    /* Profile Section */
-    .profile-header {
-      background: var(--gradient);
-      color: white;
-      border-radius: var(--border-radius);
-      padding: 40px;
-      margin-bottom: 30px;
-      text-align: center;
-      box-shadow: var(--shadow);
-    }
-
-    .profile-img {
-      width: 150px;
-      height: 150px;
-      border-radius: 50%;
-      border: 5px solid white;
-      object-fit: cover;
-      margin-bottom: 20px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    }
-
-    .name {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .title {
-      font-size: 1.2rem;
-      opacity: 0.9;
-      margin-bottom: 20px;
-    }
-
-    .bio {
-      max-width: 600px;
-      margin: 0 auto;
-      font-size: 1.1rem;
-    }
-
-    .section {
-      background: var(--bg-white);
-      border-radius: var(--border-radius);
-      padding: 30px;
-      margin-bottom: 30px;
-      box-shadow: var(--shadow);
-    }
-
-    .section-title {
-      font-size: 1.5rem;
-      margin-bottom: 20px;
-      color: var(--primary);
-      position: relative;
-      padding-bottom: 10px;
-    }
-
-    .section-title:after {
-      content: '';
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      width: 50px;
-      height: 3px;
-      background: var(--gradient);
-    }
-
-    /* Social Links */
-    .social-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      margin-top: 20px;
-    }
-
-    .social-link {
-      display: flex;
-      align-items: center;
-      text-decoration: none;
-      color: var(--text-dark);
-      padding: 12px 20px;
-      border-radius: 10px;
-      background: var(--bg-light);
-      transition: all 0.3s ease;
-      flex: 1;
-      min-width: 200px;
-    }
-
-    .social-link:hover {
-      background: var(--gradient);
-      color: white;
-      transform: translateY(-3px);
-    }
-
-    .social-link i {
-      font-size: 1.2rem;
-      margin-right: 10px;
-    }
-
-    /* Products Grid */
-    .product-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 25px;
-      margin-top: 20px;
-    }
-
-    .product-card {
-      background: var(--bg-white);
-      border-radius: var(--border-radius);
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      transition: all 0.3s ease;
-    }
-
-    .product-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-    }
-
-    .product-image {
-      width: 100%;
-      height: 200px;
-      object-fit: contain;
-      background: var(--bg-light);
-      padding: 20px;
-    }
-
-    .product-info {
-      padding: 20px;
-    }
-
-    .product-title {
-      font-size: 1.2rem;
-      margin-bottom: 10px;
-      color: var(--text-dark);
-    }
-
-    .product-description {
-      color: var(--text-light);
-      margin-bottom: 20px;
-    }
-
-    .product-button {
-      display: inline-block;
-      background: var(--gradient);
-      color: white;
-      padding: 10px 20px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      width: 100%;
-      text-align: center;
-    }
-
-    .product-button:hover {
-      opacity: 0.9;
-      transform: translateY(-2px);
-    }
-
-    /* Payment Methods */
-    .payment-methods {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-    }
-
-    .payment-card {
-      background: var(--bg-white);
-      border-radius: var(--border-radius);
-      padding: 20px;
-      box-shadow: var(--shadow);
-      transition: all 0.3s ease;
-    }
-
-    .payment-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-    }
-
-    .payment-card h3 {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--primary);
-      margin-bottom: 15px;
-    }
-
-    .payment-details {
-      color: var(--text-light);
-    }
-
-    .copy-btn {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      transition: all 0.3s ease;
-      margin-left: 10px;
-    }
-
-    .copy-btn:hover {
-      background: var(--primary-dark);
-    }
-
-    /* Cookie Converter Section */
-    .cookie-converter-section {
-      background: var(--bg-white);
-      border-radius: var(--border-radius);
-      padding: 40px;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-      max-width: 1200px;
-      margin: 0 auto;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .cookie-converter-section::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 5px;
-      background: var(--gradient);
-    }
-
-    .app-header {
-      text-align: center;
-      margin-bottom: 40px;
-      padding: 40px;
-      background: var(--gradient);
-      border-radius: var(--border-radius);
-      color: white;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .app-header::after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: linear-gradient(
-        45deg,
-        transparent,
-        rgba(255, 255, 255, 0.1),
-        transparent
-      );
-      transform: rotate(45deg);
-      animation: shine 3s infinite;
-    }
-
-    @keyframes shine {
-      0% {
-        transform: translateX(-100%) rotate(45deg);
-      }
-      100% {
-        transform: translateX(100%) rotate(45deg);
-      }
-    }
-
-    .cookie-icon {
-      font-size: 4rem;
-      margin-bottom: 20px;
-      animation: float 3s ease-in-out infinite;
-    }
-
-    @keyframes float {
-      0%, 100% {
-        transform: translateY(0);
-      }
-      50% {
-        transform: translateY(-10px);
-      }
-    }
-
-    .app-header h1 {
-      font-size: 2.8rem;
-      margin-bottom: 15px;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-      font-weight: 700;
-    }
-
-    .app-header .subtitle {
-      font-size: 1.2rem;
-      opacity: 0.9;
-      margin-bottom: 10px;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.1);
-    }
-
-    .container {
-      background: var(--bg-white);
-      border-radius: var(--border-radius);
-      padding: 30px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-      border: 1px solid rgba(110, 142, 251, 0.1);
-    }
-
-    .tabs {
-      display: flex;
-      gap: 15px;
-      margin-bottom: 30px;
-      background: var(--bg-light);
-      padding: 10px;
-      border-radius: var(--border-radius);
-    }
-
-    .tab {
-      padding: 15px 30px;
-      background: transparent;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 600;
-      flex: 1;
-      justify-content: center;
-    }
-
-    .tab:hover {
-      background: rgba(110, 142, 251, 0.1);
-      color: var(--primary);
-    }
-
-    .tab.active {
-      background: var(--gradient);
-      color: white;
-      box-shadow: 0 5px 15px rgba(110, 142, 251, 0.3);
-    }
-
-    .tab i {
-      font-size: 1.2rem;
-    }
-
-    .file-input-wrapper {
-      border: 2px dashed var(--primary);
-      border-radius: var(--border-radius);
-      padding: 40px;
-      text-align: center;
-      background: var(--bg-light);
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .file-input-wrapper::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(45deg, transparent, rgba(110, 142, 251, 0.05), transparent);
-      animation: borderShine 2s infinite;
-    }
-
-    @keyframes borderShine {
-      0% {
-        transform: translateX(-100%);
-      }
-      100% {
-        transform: translateX(100%);
-      }
-    }
-
-    .file-input-wrapper.active {
-      border-color: var(--secondary);
-      background: rgba(167, 119, 227, 0.1);
-      transform: scale(1.02);
-    }
-
-    .file-input-message i {
-      font-size: 3rem;
-      color: var(--primary);
-      margin-bottom: 20px;
-      animation: bounce 2s infinite;
-    }
-
-    @keyframes bounce {
-      0%, 100% {
-        transform: translateY(0);
-      }
-      50% {
-        transform: translateY(-10px);
-      }
-    }
-
-    .button-row {
-      display: flex;
-      gap: 15px;
-      margin: 30px 0;
-    }
-
-    .button-row button {
-      padding: 15px 30px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      transition: all 0.3s ease;
-      flex: 1;
-      justify-content: center;
-      font-size: 1.1rem;
-    }
-
-    #processBtn {
-      background: var(--gradient);
-      color: white;
-      box-shadow: 0 5px 15px rgba(110, 142, 251, 0.3);
-    }
-
-    #processBtn:hover:not(:disabled) {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(110, 142, 251, 0.4);
-    }
-
-    #processBtn:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-    }
-
-    #downloadBtn, #copyBtn {
-      background: var(--primary);
-      color: white;
-      box-shadow: 0 5px 15px rgba(110, 142, 251, 0.2);
-    }
-
-    #downloadBtn:hover, #copyBtn:hover {
-      background: var(--primary-dark);
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(110, 142, 251, 0.3);
-    }
-
-    .output-container {
-      background: var(--bg-light);
-      border-radius: var(--border-radius);
-      padding: 25px;
-      margin-top: 30px;
-      border: 1px solid rgba(110, 142, 251, 0.1);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-    }
-
-    .output-header {
-      margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 2px solid rgba(110, 142, 251, 0.2);
-    }
-
-    .output-title {
-      font-weight: 600;
-      color: var(--text-dark);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 1.2rem;
-    }
-
-    .output-title i {
-      color: var(--primary);
-      font-size: 1.4rem;
-    }
-
-    #output {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      font-family: monospace;
-      white-space: pre-wrap;
-      word-break: break-all;
-      max-height: 300px;
-      overflow-y: auto;
-      border: 1px solid rgba(110, 142, 251, 0.1);
-      font-size: 1.1rem;
-      line-height: 1.6;
-    }
-
-    .guide {
-      margin-top: 40px;
-      background: var(--bg-light);
-      border-radius: var(--border-radius);
-      padding: 35px;
-      border: 1px solid rgba(110, 142, 251, 0.1);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-    }
-
-    .guide h2 {
-      color: var(--text-dark);
-      margin-bottom: 25px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 1.5rem;
-      font-weight: 600;
-    }
-
-    .guide h2 i {
-      color: var(--primary);
-      font-size: 1.8rem;
-    }
-
-    .guide table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 0 0 1px rgba(110, 142, 251, 0.1);
-    }
-
-    .guide th, .guide td {
-      padding: 15px;
-      text-align: left;
-      border-bottom: 1px solid rgba(110, 142, 251, 0.1);
-    }
-
-    .guide th {
-      font-weight: 600;
-      color: var(--text-dark);
-      background: rgba(110, 142, 251, 0.1);
-      font-size: 1.1rem;
-    }
-
-    .guide td:first-child {
-      font-weight: 600;
-      color: var(--primary);
-      width: 60px;
-      font-size: 1.2rem;
-    }
-
-    .guide td:last-child {
-      line-height: 1.6;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .nav-container {
-        padding: 10px 20px;
-        flex-direction: column;
-        gap: 10px;
-      }
-
-      .nav-left, .nav-right {
-        width: 100%;
-        justify-content: center;
-      }
-
-      .main-content {
-        padding-top: 120px;
-      }
-
-      .profile-header {
-        padding: 30px 20px;
-      }
-
-      .name {
-        font-size: 2rem;
-      }
-
-      .social-link {
-        min-width: 100%;
-      }
-
-      .cookie-converter-section {
-        padding: 20px;
-      }
-
-      .app-header {
-        padding: 30px 20px;
-      }
-
-      .app-header h1 {
-        font-size: 2.2rem;
-      }
-
-      .cookie-icon {
-        font-size: 3rem;
-      }
-
-      .tabs {
-        flex-direction: column;
-        padding: 5px;
-      }
-
-      .tab {
-        padding: 12px 20px;
-      }
-
-      .button-row {
-        flex-direction: column;
-      }
-
-      .button-row button {
-        width: 100%;
-        padding: 12px 20px;
-      }
-
-      .guide {
-        padding: 25px;
-      }
-
-      .guide table {
-        display: block;
-        overflow-x: auto;
-      }
-
-      .guide th, .guide td {
-        padding: 12px;
-      }
-
-      .nav-btn {
-        padding: 10px 20px;
-        font-size: 1rem;
-      }
-      
-      .nav-btn.active::after {
-        width: 20px;
-      }
-      
-      @keyframes navPulse {
-        0% {
-          width: 20px;
-          opacity: 1;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie Manager & Converter Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        50% {
-          width: 35px;
-          opacity: 0.8;
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #ffffff;
         }
-        100% {
-          width: 20px;
-          opacity: 1;
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: linear-gradient(145deg, #2a2a2a, #1e1e1e);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
         }
-      }
-    }
 
-    @media (max-width: 480px) {
-      .nav-btn {
-        padding: 6px 12px;
-        font-size: 0.9rem;
-      }
+        h1 {
+            text-align: center;
+            color: #ffffff;
+            margin-bottom: 40px;
+            font-size: 3em;
+            font-weight: 700;
+            background: linear-gradient(45deg, #ff6b35, #ff8c42, #ffa726);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 107, 53, 0.3);
+            letter-spacing: -1px;
+        }
 
-      .lang-btn {
-        padding: 4px 8px;
-        font-size: 0.8rem;
-      }
+        .section {
+            margin-bottom: 35px;
+            padding: 30px;
+            border: 1px solid rgba(255, 107, 53, 0.2);
+            border-radius: 20px;
+            background: linear-gradient(145deg, #2d2d2d, #252525);
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
 
-      .section {
-        padding: 20px;
-      }
-    }
+        .section:hover {
+            border-color: rgba(255, 107, 53, 0.4);
+            box-shadow: 
+                0 15px 40px rgba(0, 0, 0, 0.4),
+                0 0 20px rgba(255, 107, 53, 0.1);
+        }
 
-    /* Animation */
-    @keyframes pulse {
-      0% {
-        box-shadow: 0 0 0 0 rgba(110, 142, 251, 0.4);
-      }
-      70% {
-        box-shadow: 0 0 0 15px rgba(110, 142, 251, 0);
-      }
-      100% {
-        box-shadow: 0 0 0 0 rgba(110, 142, 251, 0);
-      }
-    }
+        .section h2 {
+            color: #ff6b35;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-    .pulse {
-      animation: pulse 2s infinite;
-    }
+        .upload-area {
+            border: 2px dashed #ff6b35;
+            border-radius: 15px;
+            padding: 50px;
+            text-align: center;
+            background: linear-gradient(145deg, rgba(255, 107, 53, 0.05), rgba(255, 140, 66, 0.05));
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
 
-    /* Weather Effects */
-    .weather-container {
-        display: none;
-    }
+        .upload-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 107, 53, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
 
-    .weather-controls {
-        display: none;
-    }
+        .upload-area:hover::before {
+            left: 100%;
+        }
 
-    /* Add styles for paste input area */
-    .paste-area {
-        width: 100%;
-        min-height: 200px;
-        padding: 20px;
-        border: 2px solid rgba(110, 142, 251, 0.2);
-        border-radius: var(--border-radius);
-        background: var(--bg-light);
-        font-family: 'Poppins', sans-serif;
-        font-size: 1rem;
-        line-height: 1.6;
-        color: var(--text-dark);
-        resize: vertical;
-        transition: all 0.3s ease;
-    }
+        .upload-area:hover {
+            background: linear-gradient(145deg, rgba(255, 107, 53, 0.1), rgba(255, 140, 66, 0.1));
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.2);
+        }
 
-    .paste-area:focus {
-        outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(110, 142, 251, 0.1);
-        background: white;
-    }
+        .upload-area.dragover {
+            background: linear-gradient(145deg, rgba(255, 107, 53, 0.2), rgba(255, 140, 66, 0.2));
+            border-color: #ff8c42;
+            transform: scale(1.02);
+        }
 
-    .paste-area::placeholder {
-        color: var(--text-light);
-        opacity: 0.7;
-    }
+        .upload-area p {
+            color: #ffffff;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
 
-    .input-group {
-        margin-bottom: 25px;
-    }
+        input[type="file"] {
+            display: none;
+        }
 
-    .input-group label {
-        display: block;
-        margin-bottom: 10px;
-        color: var(--text-dark);
-        font-weight: 500;
-        font-size: 1.1rem;
-    }
+        .btn {
+            background: linear-gradient(45deg, #ff6b35, #ff8c42);
+            color: #ffffff;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 8px 25px rgba(255, 107, 53, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
 
-    .input-group label i {
-        color: var(--primary);
-        margin-right: 8px;
-    }
-  </style>
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 12px 35px rgba(255, 107, 53, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #4a4a4a, #6a6a6a);
+            box-shadow: 
+                0 8px 25px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 
+                0 12px 35px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #2e7d32, #4caf50);
+            box-shadow: 
+                0 8px 25px rgba(46, 125, 50, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-success:hover {
+            box-shadow: 
+                0 12px 35px rgba(46, 125, 50, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #d32f2f, #f44336);
+            box-shadow: 
+                0 8px 25px rgba(211, 47, 47, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 
+                0 12px 35px rgba(211, 47, 47, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .format-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .format-buttons .btn {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .results {
+            margin-top: 25px;
+        }
+
+        .cookie-item {
+            background: linear-gradient(145deg, #3a3a3a, #2d2d2d);
+            border: 1px solid rgba(255, 107, 53, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 
+                0 8px 25px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .cookie-item:hover {
+            border-color: rgba(255, 107, 53, 0.4);
+            box-shadow: 
+                0 12px 35px rgba(0, 0, 0, 0.3),
+                0 0 15px rgba(255, 107, 53, 0.1);
+        }
+
+        .cookie-item h4 {
+            color: #ff6b35;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .cookie-content {
+            background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+            border: 1px solid rgba(255, 107, 53, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 250px;
+            overflow-y: auto;
+            color: #ffffff;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .stats {
+            background: linear-gradient(45deg, #ff6b35, #ff8c42);
+            color: #ffffff;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 25px 0;
+            text-align: center;
+            box-shadow: 
+                0 10px 30px rgba(255, 107, 53, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+            margin: 15px 0;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #ffffff, #f0f0f0);
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .error {
+            color: #ff5252;
+            background: linear-gradient(145deg, rgba(255, 82, 82, 0.1), rgba(255, 82, 82, 0.05));
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 1px solid rgba(255, 82, 82, 0.2);
+            box-shadow: 0 5px 15px rgba(255, 82, 82, 0.1);
+        }
+
+        .success {
+            color: #4caf50;
+            background: linear-gradient(145deg, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.05));
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 1px solid rgba(76, 175, 80, 0.2);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.1);
+        }
+
+        .copy-btn {
+            background: linear-gradient(45deg, #ff6b35, #ff8c42);
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 4px 15px rgba(255, 107, 53, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .copy-btn:hover {
+            background: linear-gradient(45deg, #ff8c42, #ffa726);
+            transform: translateY(-2px);
+            box-shadow: 
+                0 6px 20px rgba(255, 107, 53, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        /* Dropdown styles */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background: linear-gradient(145deg, #3a3a3a, #2d2d2d);
+            min-width: 220px;
+            box-shadow: 
+                0 15px 40px rgba(0, 0, 0, 0.4),
+                0 0 20px rgba(255, 107, 53, 0.1);
+            z-index: 1000;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 107, 53, 0.2);
+        }
+
+        .dropdown-content a {
+            color: #ffffff;
+            padding: 15px 20px;
+            text-decoration: none;
+            display: block;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .dropdown-content a:hover {
+            background: linear-gradient(45deg, #ff6b35, #ff8c42);
+            color: #ffffff;
+        }
+
+        .dropdown-content a:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown:hover .btn {
+            background: linear-gradient(45deg, #ff8c42, #ffa726);
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #2a2a2a;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #ff6b35, #ff8c42);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, #ff8c42, #ffa726);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            h1 {
+                font-size: 2.2em;
+            }
+
+            .format-buttons {
+                flex-direction: column;
+            }
+            
+            .format-buttons .btn {
+                flex: none;
+                width: 100%;
+            }
+
+            .upload-area {
+                padding: 30px 20px;
+            }
+
+            .section {
+                padding: 20px;
+            }
+        }
+
+        /* Animation keyframes */
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 107, 53, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(255, 107, 53, 0.6); }
+        }
+
+        .section:hover {
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        /* Team Header Styles */
+        .team-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 25px 30px;
+            background: linear-gradient(145deg, #2d2d2d, #1e1e1e);
+            border: 2px solid rgba(255, 107, 53, 0.3);
+            border-radius: 20px;
+            box-shadow: 
+                0 15px 40px rgba(0, 0, 0, 0.3),
+                0 0 20px rgba(255, 107, 53, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .team-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ff6b35, #ff8c42, #ffa726, #ff6b35);
+            background-size: 200% 100%;
+            animation: gradientShift 3s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .team-brand {
+            flex: 1;
+        }
+
+        .team-logo {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .team-icon {
+            font-size: 3em;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .team-text h2 {
+            color: #ff6b35;
+            font-size: 2.2em;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            background: linear-gradient(45deg, #ff6b35, #ff8c42, #ffa726);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 107, 53, 0.3);
+        }
+
+        .team-text p {
+            color: #cccccc;
+            font-size: 1.1em;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .admin-contact {
+            flex-shrink: 0;
+        }
+
+        .admin-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 25px;
+            background: linear-gradient(145deg, #3a3a3a, #2d2d2d);
+            border: 1px solid rgba(255, 107, 53, 0.2);
+            border-radius: 15px;
+            box-shadow: 
+                0 8px 25px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .admin-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 12px 35px rgba(0, 0, 0, 0.3),
+                0 0 20px rgba(255, 107, 53, 0.2);
+            border-color: rgba(255, 107, 53, 0.4);
+        }
+
+        .admin-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #ff6b35, #ff8c42);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 5px 15px rgba(255, 107, 53, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .telegram-logo {
+            width: 28px;
+            height: 28px;
+            color: #ffffff;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .admin-info h3 {
+            color: #ffffff;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin: 0 0 5px 0;
+        }
+
+        .admin-link {
+            color: #ff6b35;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .admin-link:hover {
+            color: #ff8c42;
+            transform: scale(1.05);
+            text-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+        }
+
+        /* Updated Footer - Simplified */
+        .footer {
+            margin-top: 50px;
+            padding: 20px 0;
+            text-align: center;
+            border-top: 1px solid rgba(255, 107, 53, 0.2);
+        }
+
+        .footer p {
+            color: #888888;
+            font-size: 0.9em;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .team-header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .team-logo {
+                justify-content: center;
+            }
+
+            .team-text h2 {
+                font-size: 1.8em;
+            }
+
+            .admin-card {
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- Remove weather container and controls -->
-  <div class="nav-container">
-    <div class="nav-left">
-      <a href="#" class="logo">
-        <i class="fas fa-cookie-bite"></i>
-        FB88
-      </a>
-      <button class="nav-btn active" onclick="showPage('profile')" id="nav-profile">
-        <i class="fas fa-user"></i> Profile
-      </button>
-      <button class="nav-btn" onclick="showPage('converter')" id="nav-converter">
-        <i class="fas fa-exchange-alt"></i> Converter
-      </button>
-    </div>
-    <div class="nav-right">
-      <button class="lang-btn" onclick="changeLanguage('vi')" id="lang-btn-vi">VI</button>
-      <button class="lang-btn" onclick="changeLanguage('en')" id="lang-btn-en">EN</button>
-      <button class="lang-btn" onclick="changeLanguage('ru')" id="lang-btn-ru">RU</button>
-    </div>
-  </div>
-
-  <div class="main-content">
-    <!-- Profile Page -->
-    <div class="page-container active" id="profile-page">
-      <!-- Profile Section -->
-      <div class="profile-section">
-        <header class="profile-header">
-          <img src="https://i.postimg.cc/mkCNTmRY/photo-2025-05-07-18-43-33.jpg" alt="Profile Image" class="profile-img">
-          <h1 class="name">FB88 - SHOP</h1>
-          <p class="title lang-title">Best Cookies On The Market</p>
-          <p class="bio lang-bio">Welcome to our shop FB88 - SHOP 💀🔥</p>
-        </header>
+    <div class="container">
+        <h1>🍪 Cookie Manager & Converter Tool</h1>
         
-        <section class="section">
-          <h2 class="section-title lang-telegram">Telegram</h2>
-          <div class="social-links">
-            <a href="https://t.me/Ducmanhjay" class="social-link" target="_blank">
-              <i class="fab fa-telegram"></i> <span class="lang-personal">Personal Account</span>
-            </a>
-            <a href="https://t.me/fb88shop_bot" class="social-link" target="_blank">
-              <i class="fab fa-telegram"></i> <span class="lang-bot">Telegram Bot</span>
-            </a>
-            <a href="https://t.me/yourchannelname" class="social-link" target="_blank">
-              <i class="fab fa-telegram"></i> <span class="lang-channel">Telegram Channel</span>
-            </a>
-            <a href="https://t.me/yourgroupchatname" class="social-link" target="_blank">
-              <i class="fab fa-telegram"></i> <span class="lang-group">Telegram Group</span>
-            </a>
-          </div>
-        </section>
-        
-        <section class="section">
-          <h2 class="section-title lang-products">Products</h2>
-          <div class="product-grid">
-            <div class="product-card">
-              <img src="https://i.postimg.cc/XNRVrQKR/Cookie-ADS-C-C-Page.png" alt="Cookie ADS Cổ Có Page" class="product-image">
-              <div class="product-info">
-                <h3 class="product-title">Cookie ADS Cổ Có Page</h3>
-                <p class="product-description lang-product1-desc">Contact Telegram @DucmanhJay to purchase</p>
-                <a href="#" class="product-button lang-details">Details</a>
-              </div>
-            </div>
-            
-            <div class="product-card">
-              <img src="https://i.postimg.cc/59hCf5X0/eu.png" alt="Cookie EU" class="product-image">
-              <div class="product-info">
-                <h3 class="product-title">Cookie EU</h3>
-                <p class="product-description lang-product2-desc">Contact Telegram @DucmanhJay to purchase</p>
-                <a href="#" class="product-button lang-details">Details</a>
-              </div>
-            </div>
-            
-            <div class="product-card">
-              <img src="https://i.postimg.cc/h469fW5K/bm.png" alt="Cookie Có BM" class="product-image">
-              <div class="product-info">
-                <h3 class="product-title">Cookie Có BM</h3>
-                <p class="product-description lang-product3-desc">Contact Telegram @DucmanhJay to purchase</p>
-                <a href="#" class="product-button lang-details">Details</a>
-              </div>
-            </div>
-            
-            <div class="product-card">
-              <img src="https://i.postimg.cc/GmGnTyJq/Chat-GPT-Image-06-01-21-17-thg-5-2025.png" alt="Cookie Limit 250+" class="product-image">
-              <div class="product-info">
-                <h3 class="product-title">Cookie Limit 250+</h3>
-                <p class="product-description lang-product4-desc">Contact Telegram @DucmanhJay to purchase</p>
-                <a href="#" class="product-button lang-details">Details</a>
-              </div>
-            </div>
-          </div>
-        </section>
-        
-        <section class="section">
-          <h2 class="section-title lang-payment">Crypto Payment</h2>
-          <div class="payment-methods">
-            <div class="payment-card">
-              <h3><i class="fab fa-bitcoin"></i> Bitcoin (BTC)</h3>
-              <div class="payment-details">
-                <p><strong class="lang-wallet-address">Wallet Address:</strong> 13cWQexvwoqHS8R3w6fbGqM4nRa5rCX48S <button class="copy-btn" onclick="copyText('13cWQexvwoqHS8R3w6fbGqM4nRa5rCX48S')"><span class="lang-copy">Copy</span></button></p>
-              </div>
-            </div>
-            
-            <div class="payment-card">
-              <h3><i class="fas fa-coins"></i> USDT TRC20</h3>
-              <div class="payment-details">
-                <p><strong class="lang-wallet-address">Wallet Address:</strong> TFYM3TPfTpRFPXpyTpdR6JAW3EYWoZxhhW <button class="copy-btn" onclick="copyText('TFYM3TPfTpRFPXpyTpdR6JAW3EYWoZxhhW')"><span class="lang-copy">Copy</span></button></p>
-              </div>
-            </div>
-            
-            <div class="payment-card">
-              <h3><i class="fab fa-litecoin"></i> Litecoin (LTC)</h3>
-              <div class="payment-details">
-                <p><strong class="lang-wallet-address">Wallet Address:</strong> LXrVgALWt1kwFz671nTBHW9Pz76JhSadjh <button class="copy-btn" onclick="copyText('LXrVgALWt1kwFz671nTBHW9Pz76JhSadjh')"><span class="lang-copy">Copy</span></button></p>
-              </div>
-            </div>
-            
-            <div class="payment-card">
-              <h3><i class="fas fa-exchange-alt"></i> Binance ID</h3>
-              <div class="payment-details">
-                <p><strong>ID:</strong> 939636027 <button class="copy-btn" onclick="copyText('939636027')"><span class="lang-copy">Copy</span></button></p>
-                <p><strong>Email:</strong> your.binance@example.com <button class="copy-btn" onclick="copyText('your.binance@example.com')"><span class="lang-copy">Copy</span></button></p>
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
-    </div>
-
-    <!-- Cookie Converter Page -->
-    <div class="page-container" id="converter-page">
-      <!-- Cookie Converter Section -->
-      <div class="cookie-converter-section">
-        <div class="app-header">
-          <div class="cookie-icon"><i class="fas fa-cookie-bite"></i></div>
-          <h1 class="lang-converter-title">Cookie Conversion Utility</h1>
-          <p class="subtitle lang-converter-subtitle">Providing large quantities of Cookie BOT EU - MIX - ONLY 250 - BM - PAGE</p>
-          <p class="subtitle lang-converter-contact">Purchase: @Ducmanhjay</p>
-        </div>
-        
-        <div class="container">
-          <div class="tabs">
-            <div class="tab active" data-tab="upload"><i class="fas fa-folder-open"></i> <span class="lang-upload-tab">Upload File</span></div>
-            <div class="tab" data-tab="paste"><i class="fas fa-paste"></i> <span class="lang-paste-tab">Paste Directly</span></div>
-          </div>
-          
-          <div class="tab-content active" id="upload-tab">
-            <div class="input-group">
-              <label for="folderInput"><i class="fas fa-folder-open"></i> <span class="lang-select-folder">Select Folder:</span></label>
-              <div class="file-input-wrapper" id="dropzone">
-                <div class="file-input-message">
-                  <i class="fas fa-cloud-upload-alt"></i>
-                  <span class="lang-drop-zone">Click or drag and drop folder containing cookie files</span>
+        <!-- Team & Admin Header -->
+        <div class="team-header">
+            <div class="team-brand">
+                <div class="team-logo">
+                    <span class="team-icon">🏆</span>
+                    <div class="team-text">
+                        <h2>DMS LGS - Community</h2>
+                        <p>Professional Cookie Management Tool</p>
+                    </div>
                 </div>
-                <input type="file" id="folderInput" webkitdirectory directory multiple />
-              </div>
             </div>
-          </div>
-          
-          <div class="tab-content" id="paste-tab">
-            <div class="input-group">
-              <label for="pasteInput"><i class="fas fa-paste"></i> <span class="lang-paste-tab">Paste Directly:</span></label>
-              <textarea id="pasteInput" class="paste-area lang-paste-placeholder" placeholder="Paste your cookies here (string, JSON or Netscape format)"></textarea>
+            <div class="admin-contact">
+                <div class="admin-card">
+                    <div class="admin-avatar">
+                        <svg class="telegram-logo" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                        </svg>
+                    </div>
+                    <div class="admin-info">
+                        <h3>Admin</h3>
+                        <a href="https://t.me/Ducmanhjay" target="_blank" class="admin-link">
+                            @Ducmanhjay
+                        </a>
+                    </div>
+                </div>
             </div>
-          </div>
-          
-          <div class="input-group">
-            <label for="formatSelect"><i class="fas fa-file-code"></i> <span class="lang-select-format">Select conversion format:</span></label>
-            <div class="select-wrapper">
-              <select id="formatSelect">
-                <option value="string" class="lang-format-string">Cookie String Format</option>
-                <option value="json" class="lang-format-json">JSON Format</option>
-                <option value="netscape" class="lang-format-netscape">Netscape Format</option>
-              </select>
-            </div>
-          </div>
-          
-          <div class="button-row">
-            <button id="processBtn" disabled><i class="fas fa-cogs"></i> <span class="lang-process">Process</span></button>
-            <button id="downloadBtn" style="display:none;"><i class="fas fa-download"></i> <span class="lang-download">Download ZIP</span></button>
-            <button id="copyBtn" style="display:none;"><i class="fas fa-copy"></i> <span class="lang-copy-result">Copy</span></button>
-          </div>
-          
-          <div class="output-container">
-            <div class="output-header">
-              <div class="output-title"><i class="fas fa-terminal"></i> <span class="lang-result">Result</span></div>
-            </div>
-            <pre id="output" class="lang-no-data">No data has been processed yet.</pre>
-          </div>
         </div>
         
-        <div class="guide">
-          <h2><i class="fas fa-book"></i> <span class="lang-guide">User Guide</span></h2>
-          <table>
-            <thead>
-              <tr>
-                <th class="lang-step">Step</th>
-                <th class="lang-description">Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1</td>
-                <td>
-                  <strong class="lang-upload-option">Option A: Select Upload File tab, click Select Folder and choose folder containing all BOT files</strong><br>
-                  <strong class="lang-paste-option">Option B: Select Paste Directly tab and paste your cookies into the text box</strong>
-                </td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td class="lang-select-format-step">Choose desired cookie format (String, JSON or Netscape).</td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td>Nhấn nút <strong>Xử lý</strong> để tiến hành convert.</td>
-              </tr>
-              <tr>
-                <td>4</td>
-                <td>
-                  <strong>Nếu tải file:</strong> Khi hoàn tất, nhấn <strong>Tải file ZIP</strong> để tải tất cả kết quả về máy.<br>
-                  <strong>Nếu dán trực tiếp:</strong> Khi hoàn tất, nhấn <strong>Sao chép</strong> để sao chép kết quả.
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <!-- Upload Section -->
+        <div class="section">
+            <h2>📁 Tải lên Files/Folder</h2>
+            <div class="upload-area" id="uploadArea">
+                <p>🎯 Kéo thả folder hoặc chọn nhiều file .txt chứa cookie</p>
+                <input type="file" id="fileInput" multiple webkitdirectory>
+                <input type="file" id="fileInputFiles" multiple accept=".txt">
+                <br><br>
+                <button class="btn" onclick="document.getElementById('fileInput').click()">
+                    📂 Chọn Folder
+                </button>
+                <button class="btn btn-secondary" onclick="document.getElementById('fileInputFiles').click()">
+                    📄 Chọn Files
+                </button>
+            </div>
+            
+            <div class="stats" id="stats" style="display: none;">
+                <div> Đã tìm thấy: <span id="fileCount">0</span> files | Cookie: <span id="cookieCount">0</span></div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
         </div>
-      </div>
+
+        <!-- Convert Section -->
+        <div class="section">
+            <h2>🔄 Chuyển đổi định dạng Cookie</h2>
+            <p style="color: #cccccc; margin-bottom: 20px;">Chọn định dạng đầu ra:</p>
+            <div class="format-buttons">
+                <button class="btn" onclick="convertCookies('string')">📝 Cookie String</button>
+                <button class="btn" onclick="convertCookies('json')">📋 JSON</button>
+                <button class="btn" onclick="convertCookies('netscape')"> Netscape</button>
+                <button class="btn" onclick="convertCookies('javascript')">⚡ JavaScript</button>
+                <button class="btn" onclick="convertCookies('curl')">🔧 cURL</button>
+                <button class="btn" onclick="convertCookies('header')">📡 Header</button>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <button class="btn btn-success" onclick="downloadAll()"> Tải xuống tất cả</button>
+                <div class="dropdown">
+                    <button class="btn btn-secondary">📋 Copy tất cả ▼</button>
+                    <div class="dropdown-content">
+                        <a href="#" onclick="copyAllCookiesOnly(); return false;"> Chỉ copy cookie</a>
+                        <a href="#" onclick="copyAllWithFilenames(); return false;">📄 Copy với tên file</a>
+                    </div>
+                </div>
+                <button class="btn btn-danger" onclick="clearAll()">🗑️ Xóa tất cả</button>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="section" id="resultsSection" style="display: none;">
+            <h2>📋 Kết quả</h2>
+            <div id="results"></div>
+        </div>
+
+        <!-- Footer Section -->
+        <div class="footer">
+            <p>&copy; 2024 DMS LGS - Community. All rights reserved.</p>
+        </div>
     </div>
-  </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-  <script>
-    const folderInput = document.getElementById('folderInput');
-    const formatSelect = document.getElementById('formatSelect');
-    const processBtn = document.getElementById('processBtn');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const copyBtn = document.getElementById('copyBtn');
-    const output = document.getElementById('output');
-    const dropzone = document.getElementById('dropzone');
-    const pasteInput = document.getElementById('pasteInput');
-    const tabs = document.querySelectorAll('.tab');
-    const tabContents = document.querySelectorAll('.tab-content');
+    <script>
+        let allCookies = [];
+        let processedFiles = [];
 
-    let filesToProcess = [];
-    let zip = new JSZip();
-    let activeTab = 'upload';
-    let convertedText = '';
-
-    // Tab switching
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        tabContents.forEach(c => c.classList.remove('active'));
+        // Drag & Drop functionality
+        const uploadArea = document.getElementById('uploadArea');
         
-        tab.classList.add('active');
-        activeTab = tab.getAttribute('data-tab');
-        document.getElementById(`${activeTab}-tab`).classList.add('active');
-        
-        // Reset UI elements based on active tab
-        resetUI();
-      });
-    });
-
-    function resetUI() {
-      processBtn.disabled = true;
-      downloadBtn.style.display = 'none';
-      copyBtn.style.display = 'none';
-      
-      if (activeTab === 'upload') {
-        output.textContent = filesToProcess.length > 0 
-          ? `TÌM THẤY ${filesToProcess.length} FILE COOKIE\n` 
-          : 'Chưa có file nào được chọn.';
-        processBtn.disabled = filesToProcess.length === 0;
-      } else {
-        output.textContent = 'Dán cookie của bạn và nhấn nút Xử lý.';
-        processBtn.disabled = !pasteInput.value.trim();
-      }
-    }
-
-    // Add dropzone effects
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-      dropzone.addEventListener(eventName, preventDefaults, false);
-    });
-    
-    function preventDefaults(e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    
-    ['dragenter', 'dragover'].forEach(eventName => {
-      dropzone.addEventListener(eventName, () => {
-        dropzone.classList.add('active');
-      }, false);
-    });
-    
-    ['dragleave', 'drop'].forEach(eventName => {
-      dropzone.addEventListener(eventName, () => {
-        dropzone.classList.remove('active');
-      }, false);
-    });
-
-    function detectAndParse(text) {
-      text = text.trim();
-      try {
-        const arr = JSON.parse(text);
-        if (Array.isArray(arr) && arr.every(c => c.name && c.value)) {
-          return arr.map(c => ({
-            name: c.name,
-            value: c.value,
-            domain: c.domain || ".",
-            path: c.path || "/",
-            expires: c.expires || 2147483647,
-            secure: c.secure || false,
-            httpOnly: c.httpOnly || false
-          }));
-        }
-      } catch {}
-      const lines = text.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'));
-      if (lines.length && lines.every(l => l.split('\t').length >= 7)) {
-        return lines.map(l => {
-          const p = l.split('\t');
-          return {
-            domain: p[0],
-            path: p[2],
-            secure: p[3].toUpperCase() === "TRUE",
-            expires: parseInt(p[4], 10) || 2147483647,
-            name: p[5],
-            value: p[6],
-            httpOnly: p[0].startsWith("#HttpOnly_")
-          };
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
         });
-      }
-      const parts = text.split(';').map(s => s.trim()).filter(s => s.includes('='));
-      if (parts.length) {
-        return parts.map(s => {
-          const [n, ...rest] = s.split('=');
-          return { name: n.trim(), value: rest.join('=').trim(), domain:".", path:"/", expires:2147483647, secure:false, httpOnly:false };
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
         });
-      }
-      throw new Error("Không nhận diện được định dạng cookie trong dữ liệu.");
-    }
 
-    function convertCookies(cookies, format) {
-      if (format === "json") {
-        return JSON.stringify(cookies.map(c => ({
-          name: c.name,
-          value: c.value,
-          domain: c.domain,
-          path: c.path,
-          expires: c.expires,
-          secure: c.secure,
-          httpOnly: c.httpOnly
-        })), null, 2);
-      } else if (format === "netscape") {
-        return cookies.map(c => 
-          `${c.domain}\tTRUE\t${c.path}\t${c.secure ? "TRUE" : "FALSE"}\t${c.expires}\t${c.name}\t${c.value}`
-        ).join("\n");
-      } else { // string
-        return cookies.map(c => `${c.name}=${c.value}`).join("; ");
-      }
-    }
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            processFiles(files);
+        });
 
-    folderInput.addEventListener('change', () => {
-      filesToProcess = Array.from(folderInput.files).filter(f => f.name === 'Cookies_JSON.txt');
-      processBtn.disabled = true;
-      if (filesToProcess.length > 0) {
-        processBtn.disabled = false;
-        dropzone.classList.add('active');
-        output.textContent = `TÌM THẤY ${filesToProcess.length} FILE COOKIE\n`;
-      } else {
-        dropzone.classList.remove('active');
-        output.textContent = 'Không tìm thấy file Cookie nào trong thư mục bạn chọn.';
-      }
-      downloadBtn.style.display = 'none';
-      copyBtn.style.display = 'none';
-    });
+        // File input handlers
+        document.getElementById('fileInput').addEventListener('change', (e) => {
+            processFiles(e.target.files);
+        });
 
-    pasteInput.addEventListener('input', () => {
-      processBtn.disabled = !pasteInput.value.trim();
-      downloadBtn.style.display = 'none';
-      copyBtn.style.display = 'none';
-    });
+        document.getElementById('fileInputFiles').addEventListener('change', (e) => {
+            processFiles(e.target.files);
+        });
 
-    processBtn.addEventListener('click', () => {
-      if (activeTab === 'upload') {
-        processFiles();
-      } else {
-        processPastedData();
-      }
-    });
-
-    function processFiles() {
-      output.textContent = 'Đang xử lý...';
-      processBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý';
-      zip = new JSZip();
-      let count = 0;
-      filesToProcess.sort((a, b) => {
-        const dirA = a.webkitRelativePath.split('/')[0].toLowerCase();
-        const dirB = b.webkitRelativePath.split('/')[0].toLowerCase();
-        return dirA.localeCompare(dirB);
-      });
-
-      filesToProcess.forEach((file, index) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const rawText = e.target.result;
-          let cookies;
-          try {
-            cookies = detectAndParse(rawText);
-          } catch (err) {
-            output.textContent += `\n File ${file.webkitRelativePath} lỗi parse cookie: ${err.message}`;
-            count++;
-            if (count === filesToProcess.length) {
-              finishZip();
-            }
-            return;
-          }
-
-          const converted = convertCookies(cookies, formatSelect.value);
-          const folderName = file.webkitRelativePath.split('/')[0];
-          const order = String(index + 1).padStart(2, '0');
-          const fileName = `${order}_${folderName}_Cookies_${formatSelect.value}.txt`;
-
-          zip.file(fileName, converted);
-
-          output.textContent += `\n ${order}. ${file.webkitRelativePath} → ${fileName}`;
-
-          count++;
-          if (count === filesToProcess.length) {
-            finishZip();
-          }
-        };
-        reader.readAsText(file);
-      });
-    }
-
-    function processPastedData() {
-      output.textContent = 'Đang xử lý...';
-      processBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý';
-      
-      try {
-        const cookies = detectAndParse(pasteInput.value);
-        convertedText = convertCookies(cookies, formatSelect.value);
-        
-        output.textContent = convertedText;
-        processBtn.innerHTML = '<i class="fas fa-check-circle"></i> Đã xử lý xong';
-        copyBtn.style.display = 'inline-flex';
-        copyBtn.classList.add('pulse');
-      } catch (err) {
-        output.textContent = `Lỗi: ${err.message}`;
-        processBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Xử lý lỗi';
-      }
-    }
-
-    function finishZip() {
-      output.textContent += '\n\n Xử lý hoàn tất! Bạn có thể tải file ZIP.';
-      downloadBtn.style.display = 'inline-flex';
-      downloadBtn.classList.add('pulse');
-      processBtn.innerHTML = '<i class="fas fa-check-circle"></i> Đã xử lý xong';
-      processBtn.disabled = true;
-    }
-
-    downloadBtn.addEventListener('click', () => {
-      downloadBtn.disabled = true;
-      downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tạo ZIP';
-      output.textContent += '\n⏳ Đang tạo file ZIP...';
-
-      zip.generateAsync({ type: "blob" }).then(content => {
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(content);
-        link.download = 'Cookies_Converted_Files.zip';
-        link.click();
-        downloadBtn.disabled = false;
-        downloadBtn.innerHTML = '<i class="fas fa-download"></i> Tải file ZIP';
-        downloadBtn.classList.remove('pulse');
-        output.textContent += '\n Đã tải xong.';
-      });
-    });
-
-    copyBtn.addEventListener('click', () => {
-      navigator.clipboard.writeText(convertedText).then(() => {
-        const originalText = copyBtn.innerHTML;
-        copyBtn.innerHTML = '<i class="fas fa-check"></i> Đã sao chép';
-        setTimeout(() => {
-          copyBtn.innerHTML = originalText;
-        }, 2000);
-      });
-    });
-
-    // Language translations
-    const translations = {
-        'vi': {
-            // Profile translations
-            'lang-title': 'Best Cookies On The Market',
-            'lang-bio': 'Chào mừng bạn đến với cửa hàng của chúng tôi FB88 - SHOP 💀🔥',
-            'lang-telegram': 'Telegram',
-            'lang-personal': 'Tài khoản cá nhân',
-            'lang-bot': 'Bot Telegram',
-            'lang-channel': 'Channel Telegram',
-            'lang-group': 'Group Chat Telegram',
-            'lang-products': 'Sản phẩm',
-            'lang-product1-desc': 'Mua hàng nhắn tin Telegram @DucmanhJay',
-            'lang-product2-desc': 'Mua hàng nhắn tin Telegram @DucmanhJay',
-            'lang-product3-desc': 'Mua hàng nhắn tin Telegram @DucmanhJay',
-            'lang-product4-desc': 'Mua hàng nhắn tin Telegram @DucmanhJay',
-            'lang-details': 'Chi tiết',
-            'lang-payment': 'Thanh toán Crypto',
-            'lang-wallet-address': 'Địa chỉ ví:',
-            'lang-copy': 'Sao chép',
-            'lang-copyright': '© 2023 FB88 - SHOP. All rights reserved.',
+        async function processFiles(files) {
+            const stats = document.getElementById('stats');
+            const fileCountSpan = document.getElementById('fileCount');
+            const cookieCountSpan = document.getElementById('cookieCount');
+            const progressFill = document.getElementById('progressFill');
             
-            // Converter translations
-            'lang-converter-title': 'Công cụ chuyển đổi Cookie',
-            'lang-converter-subtitle': 'Cung cấp số lượng lớn Cookie BOT EU - MIX - ONLY 250 - BM - PAGE',
-            'lang-converter-contact': 'Mua hàng : @Ducmanhjay',
-            'lang-upload-tab': 'Tải file',
-            'lang-paste-tab': 'Dán trực tiếp',
-            'lang-select-folder': 'Chọn thư mục:',
-            'lang-drop-zone': 'Nhấp hoặc kéo thả thư mục chứa file cookie',
-            'lang-paste-placeholder': 'Dán cookie của bạn ở đây (định dạng string, JSON hoặc Netscape)',
-            'lang-select-format': 'Chọn định dạng convert:',
-            'lang-format-string': 'Cookie String (Dạng chuỗi)',
-            'lang-format-json': 'JSON (JavaScript Object Notation)',
-            'lang-format-netscape': 'Netscape (Định dạng NetScape)',
-            'lang-process': 'Xử lý',
-            'lang-download': 'Tải file ZIP',
-            'lang-copy-result': 'Sao chép',
-            'lang-result': 'Kết quả',
-            'lang-no-data': 'Chưa có dữ liệu nào được xử lý.',
-            'lang-guide': 'Hướng Dẫn Sử Dụng',
-            'lang-step': 'Bước',
-            'lang-description': 'Mô tả',
-            'lang-upload-option': 'Tùy chọn A: Chọn tab Tải file, nhấn vào Chọn thư mục và chọn thư mục gồm tất cả các file BOT',
-            'lang-paste-option': 'Tùy chọn B: Chọn tab Dán trực tiếp và dán cookie của bạn vào ô văn bản',
-            'lang-select-format-step': 'Chọn định dạng cookie mong muốn (String, JSON hoặc Netscape).',
-            'lang-process-step': 'Nhấn nút Xử lý để tiến hành convert.',
-            'lang-download-step': 'Nếu tải file: Khi hoàn tất, nhấn Tải file ZIP để tải tất cả kết quả về máy.',
-            'lang-copy-step': 'Nếu dán trực tiếp: Khi hoàn tất, nhấn Sao chép để sao chép kết quả.'
-        },
-        'en': {
-            // Profile translations
-            'lang-title': 'Best Cookies On The Market',
-            'lang-bio': 'Welcome to our shop FB88 - SHOP 💀🔥',
-            'lang-telegram': 'Telegram',
-            'lang-personal': 'Personal Account',
-            'lang-bot': 'Telegram Bot',
-            'lang-channel': 'Telegram Channel',
-            'lang-group': 'Telegram Group Chat',
-            'lang-products': 'Products',
-            'lang-product1-desc': 'Contact Telegram @DucmanhJay to purchase',
-            'lang-product2-desc': 'Contact Telegram @DucmanhJay to purchase',
-            'lang-product3-desc': 'Contact Telegram @DucmanhJay to purchase',
-            'lang-product4-desc': 'Contact Telegram @DucmanhJay to purchase',
-            'lang-details': 'Details',
-            'lang-payment': 'Crypto Payment',
-            'lang-wallet-address': 'Wallet Address:',
-            'lang-copy': 'Copy',
-            'lang-copyright': '© 2023 FB88 - SHOP. All rights reserved.',
+            stats.style.display = 'block';
             
-            // Converter translations
-            'lang-converter-title': 'Cookie Conversion Utility',
-            'lang-converter-subtitle': 'Providing large quantities of Cookie BOT EU - MIX - ONLY 250 - BM - PAGE',
-            'lang-converter-contact': 'Purchase: @Ducmanhjay',
-            'lang-upload-tab': 'Upload File',
-            'lang-paste-tab': 'Paste Directly',
-            'lang-select-folder': 'Select Folder:',
-            'lang-drop-zone': 'Click or drag and drop folder containing cookie files',
-            'lang-paste-placeholder': 'Paste your cookies here (string, JSON or Netscape format)',
-            'lang-select-format': 'Select conversion format:',
-            'lang-format-string': 'Cookie String Format',
-            'lang-format-json': 'JSON Format',
-            'lang-format-netscape': 'Netscape Format',
-            'lang-process': 'Process',
-            'lang-download': 'Download ZIP',
-            'lang-copy-result': 'Copy',
-            'lang-result': 'Result',
-            'lang-no-data': 'No data has been processed yet.',
-            'lang-guide': 'User Guide',
-            'lang-step': 'Step',
-            'lang-description': 'Description',
-            'lang-upload-option': 'Option A: Select Upload File tab, click Select Folder and choose folder containing all BOT files',
-            'lang-paste-option': 'Option B: Select Paste Directly tab and paste your cookies into the text box',
-            'lang-select-format-step': 'Choose desired cookie format (String, JSON or Netscape).',
-            'lang-process-step': 'Click Process button to start conversion.',
-            'lang-download-step': 'If uploading files: When complete, click Download ZIP to download all results.',
-            'lang-copy-step': 'If pasting directly: When complete, click Copy to copy the result.'
-        },
-        'ru': {
-            // Profile translations
-            'lang-title': 'Лучшие Куки на Рынке',
-            'lang-bio': 'Добро пожаловать в наш магазин FB88 - SHOP 💀🔥',
-            'lang-telegram': 'Телеграм',
-            'lang-personal': 'Личный аккаунт',
-            'lang-bot': 'Телеграм Бот',
-            'lang-channel': 'Телеграм Канал',
-            'lang-group': 'Телеграм Группа',
-            'lang-products': 'Продукты',
-            'lang-product1-desc': 'Для покупки свяжитесь в Телеграм @DucmanhJay',
-            'lang-product2-desc': 'Для покупки свяжитесь в Телеграм @DucmanhJay',
-            'lang-product3-desc': 'Для покупки свяжитесь в Телеграм @DucmanhJay',
-            'lang-product4-desc': 'Для покупки свяжитесь в Телеграм @DucmanhJay',
-            'lang-details': 'Подробнее',
-            'lang-payment': 'Крипто Оплата',
-            'lang-wallet-address': 'Адрес кошелька:',
-            'lang-copy': 'Копировать',
-            'lang-copyright': '© 2023 FB88 - SHOP. Все права защищены.',
+            let txtFiles = Array.from(files).filter(file => 
+                file.name.toLowerCase().endsWith('.txt')
+            );
             
-            // Converter translations
-            'lang-converter-title': 'Утилита Конвертации Cookie',
-            'lang-converter-subtitle': 'Предоставление большого количества Cookie BOT EU - MIX - ONLY 250 - BM - PAGE',
-            'lang-converter-contact': 'Покупка: @Ducmanhjay',
-            'lang-upload-tab': 'Загрузить файл',
-            'lang-paste-tab': 'Вставить напрямую',
-            'lang-select-folder': 'Выбрать папку:',
-            'lang-drop-zone': 'Нажмите или перетащите папку с файлами cookie',
-            'lang-paste-placeholder': 'Вставьте ваши cookie здесь (формат string, JSON или Netscape)',
-            'lang-select-format': 'Выберите формат конвертации:',
-            'lang-format-string': 'Формат Cookie String',
-            'lang-format-json': 'Формат JSON',
-            'lang-format-netscape': 'Формат Netscape',
-            'lang-process': 'Обработать',
-            'lang-download': 'Скачать ZIP',
-            'lang-copy-result': 'Копировать',
-            'lang-result': 'Результат',
-            'lang-no-data': 'Данные еще не обработаны.',
-            'lang-guide': 'Руководство пользователя',
-            'lang-step': 'Шаг',
-            'lang-description': 'Описание',
-            'lang-upload-option': 'Вариант A: Выберите вкладку Загрузить файл, нажмите Выбрать папку и выберите папку со всеми файлами BOT',
-            'lang-paste-option': 'Вариант B: Выберите вкладку Вставить напрямую и вставьте ваши cookie в текстовое поле',
-            'lang-select-format-step': 'Выберите желаемый формат cookie (String, JSON или Netscape).',
-            'lang-process-step': 'Нажмите кнопку Обработать для начала конвертации.',
-            'lang-download-step': 'При загрузке файлов: По завершении нажмите Скачать ZIP для загрузки всех результатов.',
-            'lang-copy-step': 'При прямом вставлении: По завершении нажмите Копировать для копирования результата.'
-        }
-    };
+            fileCountSpan.textContent = txtFiles.length;
+            processedFiles = [];
+            allCookies = [];
 
-    let currentLanguage = 'ru';
-    let currentPage = 'profile';
+            for (let i = 0; i < txtFiles.length; i++) {
+                const file = txtFiles[i];
+                const progress = ((i + 1) / txtFiles.length) * 100;
+                progressFill.style.width = progress + '%';
 
-    function showPage(page) {
-        document.querySelectorAll('.page-container').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-        
-        document.getElementById(`${page}-page`).classList.add('active');
-        document.getElementById(`nav-${page}`).classList.add('active');
-        
-        currentPage = page;
-    }
-
-    function changeLanguage(lang) {
-        currentLanguage = lang;
-        updateLanguage();
-        updateActiveButton();
-    }
-
-    function updateLanguage() {
-        const lang = translations[currentLanguage];
-        
-        // Update all elements with language classes
-        for (const key in lang) {
-            const elements = document.getElementsByClassName(key);
-            for (let i = 0; i < elements.length; i++) {
-                if (elements[i].tagName === 'INPUT' || elements[i].tagName === 'TEXTAREA') {
-                    elements[i].placeholder = lang[key];
-                } else {
-                    elements[i].textContent = lang[key];
+                try {
+                    const content = await readFileContent(file);
+                    const cookies = extractCookies(content);
+                    
+                    if (cookies.length > 0) {
+                        processedFiles.push({
+                            name: file.name,
+                            path: file.webkitRelativePath || file.name,
+                            cookies: cookies,
+                            rawContent: content
+                        });
+                        allCookies.push(...cookies);
+                    }
+                } catch (error) {
+                    console.error('Error processing file:', file.name, error);
                 }
             }
+
+            cookieCountSpan.textContent = allCookies.length;
+            
+            if (processedFiles.length > 0) {
+                showResults();
+            }
         }
 
-        // Update select options
-        const formatSelect = document.getElementById('formatSelect');
-        if (formatSelect) {
-            formatSelect.options[0].text = lang['lang-format-string'];
-            formatSelect.options[1].text = lang['lang-format-json'];
-            formatSelect.options[2].text = lang['lang-format-netscape'];
+        function readFileContent(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = (e) => reject(e);
+                reader.readAsText(file);
+            });
         }
-    }
 
-    function updateActiveButton() {
-        document.querySelectorAll('.lang-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        document.getElementById('lang-btn-' + currentLanguage).classList.add('active');
-    }
+        function extractCookies(content) {
+            const cookies = [];
+            const lines = content.split('\n');
+            
+            // Detect Netscape format
+            for (const line of lines) {
+                if (line.trim() && !line.startsWith('#')) {
+                    const parts = line.split('\t');
+                    if (parts.length >= 7) {
+                        cookies.push({
+                            domain: parts[0],
+                            flag: parts[1] === 'TRUE',
+                            path: parts[2],
+                            secure: parts[3] === 'TRUE',
+                            expiration: parts[4],
+                            name: parts[5],
+                            value: parts[6],
+                            format: 'netscape'
+                        });
+                    }
+                }
+            }
+            
+            // If no Netscape cookies found, try to extract from other formats
+            if (cookies.length === 0) {
+                // Try JSON format
+                try {
+                    const jsonData = JSON.parse(content);
+                    if (Array.isArray(jsonData)) {
+                        jsonData.forEach(cookie => {
+                            cookies.push({...cookie, format: 'json'});
+                        });
+                    }
+                } catch (e) {
+                    // Try cookie string format
+                    const cookieString = content.replace(/\n/g, ' ').trim();
+                    if (cookieString.includes('=') && cookieString.includes(';')) {
+                        const pairs = cookieString.split(';');
+                        pairs.forEach(pair => {
+                            const [name, value] = pair.split('=');
+                            if (name && value) {
+                                cookies.push({
+                                    name: name.trim(),
+                                    value: value.trim(),
+                                    format: 'string'
+                                });
+                            }
+                        });
+                    }
+                }
+            }
+            
+            return cookies;
+        }
 
-    // Initialize
-    document.addEventListener('DOMContentLoaded', function() {
-        showPage('profile');
-        changeLanguage('ru');
-    });
-  </script>
+        function showResults() {
+            const resultsSection = document.getElementById('resultsSection');
+            const results = document.getElementById('results');
+            
+            resultsSection.style.display = 'block';
+            results.innerHTML = `
+                <div class="success">
+                    ✅ Đã xử lý thành công ${processedFiles.length} files với ${allCookies.length} cookies
+                </div>
+                <p style="color: #cccccc; margin-top: 15px;">Chọn định dạng chuyển đổi ở phần trên để xem kết quả.</p>
+            `;
+        }
+
+        function convertCookies(format) {
+            const results = document.getElementById('results');
+            let html = '';
+
+            processedFiles.forEach((file, index) => {
+                const converted = convertToFormat(file.cookies, format);
+                html += `
+                    <div class="cookie-item">
+                        <h4>📄 ${file.name} 
+                            <button class="copy-btn" onclick="copyToClipboard('${escapeHtml(converted)}', this)">
+                                📋 Copy
+                            </button>
+                        </h4>
+                        <div class="cookie-content">${escapeHtml(converted)}</div>
+                    </div>
+                `;
+            });
+
+            results.innerHTML = html;
+        }
+
+        function convertToFormat(cookies, format) {
+            switch (format) {
+                case 'string':
+                    return cookies.map(c => `${c.name}=${c.value}`).join('; ');
+                
+                case 'json':
+                    return JSON.stringify(cookies, null, 2);
+                
+                case 'netscape':
+                    return cookies.map(c => {
+                        const domain = c.domain || '.example.com';
+                        const flag = c.flag || c.domain?.startsWith('.') ? 'TRUE' : 'FALSE';
+                        const path = c.path || '/';
+                        const secure = c.secure ? 'TRUE' : 'FALSE';
+                        const expiration = c.expiration || '0';
+                        return `${domain}\t${flag}\t${path}\t${secure}\t${expiration}\t${c.name}\t${c.value}`;
+                    }).join('\n');
+                
+                case 'javascript':
+                    return cookies.map(c => 
+                        `document.cookie = "${c.name}=${c.value}; path=${c.path || '/'}";`
+                    ).join('\n');
+                
+                case 'curl':
+                    const cookieString = cookies.map(c => `${c.name}=${c.value}`).join('; ');
+                    return `curl -H "Cookie: ${cookieString}" https://example.com`;
+                
+                case 'header':
+                    return 'Cookie: ' + cookies.map(c => `${c.name}=${c.value}`).join('; ');
+                
+                default:
+                    return cookies.map(c => `${c.name}=${c.value}`).join('; ');
+            }
+        }
+
+        function copyToClipboard(text, button) {
+            const unescaped = unescapeHtml(text);
+            navigator.clipboard.writeText(unescaped).then(() => {
+                const originalText = button.textContent;
+                button.textContent = '✅ Copied!';
+                button.style.background = 'linear-gradient(45deg, #4caf50, #66bb6a)';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = 'linear-gradient(45deg, #ff6b35, #ff8c42)';
+                }, 2000);
+            });
+        }
+
+        function copyAllCookiesOnly() {
+            const cookieContents = document.querySelectorAll('.cookie-content');
+            let allText = '';
+            cookieContents.forEach((content) => {
+                allText += content.textContent + '\n';
+            });
+            
+            if (allText) {
+                navigator.clipboard.writeText(allText.trim()).then(() => {
+                    alert('✅ Đã copy tất cả cookie!');
+                });
+            }
+        }
+
+        function copyAllWithFilenames() {
+            const cookieContents = document.querySelectorAll('.cookie-content');
+            let allText = '';
+            cookieContents.forEach((content, index) => {
+                allText += `=== File ${index + 1}: ${processedFiles[index].name} ===\n`;
+                allText += content.textContent + '\n\n';
+            });
+            
+            if (allText) {
+                navigator.clipboard.writeText(allText).then(() => {
+                    alert('✅ Đã copy tất cả cookie với tên file!');
+                });
+            }
+        }
+
+        function copyAll() {
+            // Giữ lại hàm cũ để tương thích ngược
+            copyAllWithFilenames();
+        }
+
+        function downloadAll() {
+            const cookieContents = document.querySelectorAll('.cookie-content');
+            let allText = '';
+            cookieContents.forEach((content, index) => {
+                allText += `=== File ${index + 1}: ${processedFiles[index].name} ===\n`;
+                allText += content.textContent + '\n\n';
+            });
+            
+            if (allText) {
+                const blob = new Blob([allText], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'converted_cookies.txt';
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        function clearAll() {
+            if (confirm('🗑️ Bạn có chắc muốn xóa tất cả dữ liệu?')) {
+                allCookies = [];
+                processedFiles = [];
+                document.getElementById('results').innerHTML = '';
+                document.getElementById('resultsSection').style.display = 'none';
+                document.getElementById('stats').style.display = 'none';
+                document.getElementById('fileInput').value = '';
+                document.getElementById('fileInputFiles').value = '';
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function unescapeHtml(html) {
+            const div = document.createElement('div');
+            div.innerHTML = html;
+            return div.textContent || div.innerText || '';
+        }
+    </script>
 </body>
 </html>
